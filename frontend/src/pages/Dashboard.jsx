@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import Produktet from '../pages/Produktet';
-import Kategorite from '../pages/Kategorite';
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
@@ -18,7 +17,7 @@ const Dashboard = () => {
     switch(activePage) {
       case 'home': return <Home />;
       case 'produktet': return <Produktet />;
-      case 'kategorite': return <Kategorite />;
+      case 'kategorite': return  <div>Kategorite CRUD</div>;
       case 'porosite': return <div>Porositë CRUD</div>;
       case 'punetoret': return <div>Punetoret CRUD</div>;
       case 'tavolinat': return <div>Tavolinat CRUD</div>;
