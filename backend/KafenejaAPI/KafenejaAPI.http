@@ -1,0 +1,6 @@
+@KafenejaAPI_HostAddress = http://localhost:5227
+
+GET {{KafenejaAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
