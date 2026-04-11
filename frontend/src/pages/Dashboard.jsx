@@ -5,6 +5,7 @@ import Produktet from '../pages/Produktet';
 import Kategorite from '../pages/Kategorite';
 import Porosite from '../pages/Porosite';
 import Punetoret from '../pages/Punetoret';
+import Tavolinat from '../pages/Tavolinat';
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
@@ -23,7 +24,7 @@ const Dashboard = () => {
       case 'kategorite': return <Kategorite />;
       case 'porosite': return <Porosite/>;
       case 'punetoret': return <Punetoret/>;
-      case 'tavolinat': return <div>Tavolinat CRUD</div>;
+      case 'tavolinat': return <Tavolinat/>;
       default: return <Home />;
     }
   };
