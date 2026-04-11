@@ -77,27 +77,29 @@ const Porosite = () => {
         </div>
       )}
 
-      <div className="bg-white rounded shadow overflow-hidden">
+      <div className="bg-white rounded shadow overflow-x-auto">
         <table className="w-full">
           <thead className="bg-gray-50">
             <tr>
-              <th className="text-left p-4">Tavolina</th>
-              <th className="text-left p-4">Shuma</th>
-              <th className="text-left p-4">Statusi</th>
-              <th className="text-left p-4">Metoda</th>
-              <th className="text-left p-4">Veprimet</th>
+              <th className="text-left p-2 text-sm">Tavolina</th>
+              <th className="text-left p-2 text-sm">Shuma</th>
+              <th className="text-left p-2 text-sm">Statusi</th>
+              <th className="text-left p-2 text-sm">Metoda</th>
+              <th className="text-left p-2 text-sm">Veprimet</th>
             </tr>
           </thead>
           <tbody>
             {porosite.map((p) => (
               <tr key={p.porosi_id} className="border-t">
-                <td className="p-4">{p.tavolina_id}</td>
-                <td className="p-4">{p.shuma_totale}€</td>
-                <td className="p-4">{p.statusi}</td>
-                <td className="p-4">{p.metoda_pageses}</td>
-                <td className="p-4 flex gap-2">
-                  <button onClick={() => handleEdit(p)} className="bg-yellow-400 text-white px-3 py-1 rounded hover:bg-yellow-500">Ndrysho</button>
-                  <button onClick={() => handleDelete(p.porosi_id)} className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Fshij</button>
+                <td className="p-2 text-sm">{p.tavolina_id}</td>
+                <td className="p-2 text-sm">{p.shuma_totale}€</td>
+                <td className="p-2 text-sm">{p.statusi}</td>
+                <td className="p-2 text-sm">{p.metoda_pageses}</td>
+                <td className="p-2">
+                  <div className="flex gap-1">
+                    <button onClick={() => handleEdit(p)} className="bg-yellow-400 text-white px-2 py-1 rounded text-xs">Ndrysho</button>
+                    <button onClick={() => handleDelete(p.porosi_id)} className="bg-red-500 text-white px-2 py-1 rounded text-xs">Fshij</button>
+                  </div>
                 </td>
               </tr>
             ))}

@@ -76,25 +76,27 @@ const Produktet = () => {
         </div>
       )}
 
-      <div className="bg-white rounded shadow overflow-hidden">
+      <div className="bg-white rounded shadow overflow-x-auto">
         <table className="w-full">
           <thead className="bg-gray-50">
             <tr>
-              <th className="text-left p-4">Emri</th>
-              <th className="text-left p-4">Cmimi</th>
-              <th className="text-left p-4">Statusi</th>
-              <th className="text-left p-4">Veprimet</th>
+              <th className="text-left p-2 text-sm">Emri</th>
+              <th className="text-left p-2 text-sm">Cmimi</th>
+              <th className="text-left p-2 text-sm">Statusi</th>
+              <th className="text-left p-2 text-sm">Veprimet</th>
             </tr>
           </thead>
           <tbody>
             {produktet.map((p) => (
               <tr key={p.produkt_id} className="border-t">
-                <td className="p-4">{p.emri}</td>
-                <td className="p-4">{p.cmimi}€</td>
-                <td className="p-4">{p.statusi}</td>
-                <td className="p-4 flex gap-2">
-                  <button onClick={() => handleEdit(p)} className="bg-yellow-400 text-white px-3 py-1 rounded hover:bg-yellow-500">Ndrysho</button>
-                  <button onClick={() => handleDelete(p.produkt_id)} className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Fshij</button>
+                <td className="p-2 text-sm">{p.emri}</td>
+                <td className="p-2 text-sm">{p.cmimi}€</td>
+                <td className="p-2 text-sm">{p.statusi}</td>
+                <td className="p-2">
+                  <div className="flex gap-1">
+                    <button onClick={() => handleEdit(p)} className="bg-yellow-400 text-white px-2 py-1 rounded text-xs">Ndrysho</button>
+                    <button onClick={() => handleDelete(p.produkt_id)} className="bg-red-500 text-white px-2 py-1 rounded text-xs">Fshij</button>
+                  </div>
                 </td>
               </tr>
             ))}
