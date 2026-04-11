@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Produktet from '../pages/Produktet';
 import Kategorite from '../pages/Kategorite';
 import Porosite from '../pages/Porosite';
+import Punetoret from '../pages/Punetoret';
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
@@ -21,7 +22,7 @@ const Dashboard = () => {
       case 'produktet': return <Produktet />;
       case 'kategorite': return <Kategorite />;
       case 'porosite': return <Porosite/>;
-      case 'punetoret': return <div>Punetoret CRUD</div>;
+      case 'punetoret': return <Punetoret/>;
       case 'tavolinat': return <div>Tavolinat CRUD</div>;
       default: return <Home />;
     }
