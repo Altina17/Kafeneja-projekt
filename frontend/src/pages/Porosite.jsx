@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import API from '../api/axios';
+import { toast } from 'react-toastify';
 
 const Porosite = () => {
   const [porosite, setPorosite] = useState([]);
@@ -20,15 +21,21 @@ const Porosite = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (editData) {
-      await API.put(`/orders/${editData.porosi_id}`, form);
-    } else {
-      await API.post('/orders', form);
+    try {
+      if (editData) {
+        await API.put(`/orders/${editData.porosi_id}`, form);
+        toast.success(`Porosia u ndryshua me sukses!`);
+      } else {
+        await API.post('/orders', form);
+        toast.success(`Porosia u shtua me sukses!`);
+      }
+      setForm({ tavolina_id: '', kamarier_id: '', shuma_totale: '', statusi: '', metoda_pageses: '' });
+      setShowForm(false);
+      setEditData(null);
+      fetchPorosite();
+    } catch (error) {
+      toast.error('Ndodhi një gabim!');
     }
-    setForm({ tavolina_id: '', kamarier_id: '', shuma_totale: '', statusi: '', metoda_pageses: '' });
-    setShowForm(false);
-    setEditData(null);
-    fetchPorosite();
   };
 
   const handleEdit = (porosi) => {
@@ -38,9 +45,14 @@ const Porosite = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('A je i sigurt?')) {
-      await API.delete(`/orders/${id}`);
-      fetchPorosite();
+    if (window.confirm(`A je i sigurt që dëshiron të fshish këtë porosi?`)) {
+      try {
+        await API.delete(`/orders/${id}`);
+        toast.success(`Porosia u fshi me sukses!`);
+        fetchPorosite();
+      } catch (error) {
+        toast.error('Ndodhi një gabim gjatë fshirjes!');
+      }
     }
   };
 

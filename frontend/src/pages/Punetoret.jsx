@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import API from '../api/axios';
+import { toast } from 'react-toastify';
 
 const Punetoret = () => {
   const [punetoret, setPunetoret] = useState([]);
@@ -20,15 +21,21 @@ const Punetoret = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (editData) {
-      await API.put(`/employees/${editData.punetor_id}`, form);
-    } else {
-      await API.post('/employees', form);
+    try {
+      if (editData) {
+        await API.put(`/employees/${editData.punetor_id}`, form);
+        toast.success(`Punetori "${form.emri} ${form.mbiemri}" u ndryshua me sukses!`);
+      } else {
+        await API.post('/employees', form);
+        toast.success(`Punetori "${form.emri} ${form.mbiemri}" u shtua me sukses!`);
+      }
+      setForm({ emri: '', mbiemri: '', pozita: '', telefoni: '', email: '', data_punesimit: '', paga: '', turni: '' });
+      setShowForm(false);
+      setEditData(null);
+      fetchPunetoret();
+    } catch (error) {
+      toast.error('Ndodhi një gabim!');
     }
-    setForm({ emri: '', mbiemri: '', pozita: '', telefoni: '', email: '', data_punesimit: '', paga: '', turni: '' });
-    setShowForm(false);
-    setEditData(null);
-    fetchPunetoret();
   };
 
   const handleEdit = (punetor) => {
@@ -37,10 +44,15 @@ const Punetoret = () => {
     setShowForm(true);
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm('A je i sigurt?')) {
-      await API.delete(`/employees/${id}`);
-      fetchPunetoret();
+  const handleDelete = async (id, emri, mbiemri) => {
+    if (window.confirm(`A je i sigurt që dëshiron të fshish "${emri} ${mbiemri}"?`)) {
+      try {
+        await API.delete(`/employees/${id}`);
+        toast.success(`Punetori "${emri} ${mbiemri}" u fshi me sukses!`);
+        fetchPunetoret();
+      } catch (error) {
+        toast.error('Ndodhi një gabim gjatë fshirjes!');
+      }
     }
   };
 
@@ -101,7 +113,7 @@ const Punetoret = () => {
                 <td className="p-2">
                   <div className="flex gap-1">
                     <button onClick={() => handleEdit(p)} className="bg-yellow-400 text-white px-2 py-1 rounded text-xs">Ndrysho</button>
-                    <button onClick={() => handleDelete(p.punetor_id)} className="bg-red-500 text-white px-2 py-1 rounded text-xs">Fshij</button>
+                    <button onClick={() => handleDelete(p.punetor_id, p.emri, p.mbiemri)} className="bg-red-500 text-white px-2 py-1 rounded text-xs">Fshij</button>
                   </div>
                 </td>
               </tr>

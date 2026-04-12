@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import API from '../api/axios';
+import { toast } from 'react-toastify';
 
 const Tavolinat = () => {
   const [tavolinat, setTavolinat] = useState([]);
@@ -20,15 +21,21 @@ const Tavolinat = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (editData) {
-      await API.put(`/tables/${editData.tavolina_id}`, form);
-    } else {
-      await API.post('/tables', form);
+    try {
+      if (editData) {
+        await API.put(`/tables/${editData.tavolina_id}`, form);
+        toast.success(`Tavolina ${form.numri} u ndryshua me sukses!`);
+      } else {
+        await API.post('/tables', form);
+        toast.success(`Tavolina ${form.numri} u shtua me sukses!`);
+      }
+      setForm({ numri: '', kapaciteti: '', vendndodhja: '', statusi: '' });
+      setShowForm(false);
+      setEditData(null);
+      fetchTavolinat();
+    } catch (error) {
+      toast.error('Ndodhi një gabim!');
     }
-    setForm({ numri: '', kapaciteti: '', vendndodhja: '', statusi: '' });
-    setShowForm(false);
-    setEditData(null);
-    fetchTavolinat();
   };
 
   const handleEdit = (tavolina) => {
@@ -37,10 +44,15 @@ const Tavolinat = () => {
     setShowForm(true);
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm('A je i sigurt?')) {
-      await API.delete(`/tables/${id}`);
-      fetchTavolinat();
+  const handleDelete = async (id, numri) => {
+    if (window.confirm(`A je i sigurt që dëshiron të fshish Tavolinën ${numri}?`)) {
+      try {
+        await API.delete(`/tables/${id}`);
+        toast.success(`Tavolina ${numri} u fshi me sukses!`);
+        fetchTavolinat();
+      } catch (error) {
+        toast.error('Ndodhi një gabim gjatë fshirjes!');
+      }
     }
   };
 
@@ -97,7 +109,7 @@ const Tavolinat = () => {
                 <td className="p-2">
                   <div className="flex gap-1">
                     <button onClick={() => handleEdit(t)} className="bg-yellow-400 text-white px-2 py-1 rounded text-xs">Ndrysho</button>
-                    <button onClick={() => handleDelete(t.tavolina_id)} className="bg-red-500 text-white px-2 py-1 rounded text-xs">Fshij</button>
+                    <button onClick={() => handleDelete(t.tavolina_id, t.numri)} className="bg-red-500 text-white px-2 py-1 rounded text-xs">Fshij</button>
                   </div>
                 </td>
               </tr>

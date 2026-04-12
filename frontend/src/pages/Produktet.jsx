@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import API from '../api/axios';
+import { toast } from 'react-toastify';
 
 const Produktet = () => {
   const [produktet, setProduktet] = useState([]);
@@ -20,15 +21,21 @@ const Produktet = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (editData) {
-      await API.put(`/products/${editData.produkt_id}`, form);
-    } else {
-      await API.post('/products', form);
+    try {
+      if (editData) {
+        await API.put(`/products/${editData.produkt_id}`, form);
+        toast.success(`Produkti "${form.emri}" u ndryshua me sukses!`);
+      } else {
+        await API.post('/products', form);
+        toast.success(`Produkti "${form.emri}" u shtua me sukses!`);
+      }
+      setForm({ emri: '', kategoria_id: '', pershkrimi: '', cmimi: '', statusi: '', foto: '' });
+      setShowForm(false);
+      setEditData(null);
+      fetchProduktet();
+    } catch (error) {
+      toast.error('Ndodhi një gabim!');
     }
-    setForm({ emri: '', kategoria_id: '', pershkrimi: '', cmimi: '', statusi: '', foto: '' });
-    setShowForm(false);
-    setEditData(null);
-    fetchProduktet();
   };
 
   const handleEdit = (produkt) => {
@@ -37,10 +44,15 @@ const Produktet = () => {
     setShowForm(true);
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm('A je i sigurt?')) {
-      await API.delete(`/products/${id}`);
-      fetchProduktet();
+  const handleDelete = async (id, emri) => {
+    if (window.confirm(`A je i sigurt që dëshiron të fshish "${emri}"?`)) {
+      try {
+        await API.delete(`/products/${id}`);
+        toast.success(`Produkti "${emri}" u fshi me sukses!`);
+        fetchProduktet();
+      } catch (error) {
+        toast.error('Ndodhi një gabim gjatë fshirjes!');
+      }
     }
   };
 
@@ -95,7 +107,7 @@ const Produktet = () => {
                 <td className="p-2">
                   <div className="flex gap-1">
                     <button onClick={() => handleEdit(p)} className="bg-yellow-400 text-white px-2 py-1 rounded text-xs">Ndrysho</button>
-                    <button onClick={() => handleDelete(p.produkt_id)} className="bg-red-500 text-white px-2 py-1 rounded text-xs">Fshij</button>
+                    <button onClick={() => handleDelete(p.produkt_id, p.emri)} className="bg-red-500 text-white px-2 py-1 rounded text-xs">Fshij</button>
                   </div>
                 </td>
               </tr>
