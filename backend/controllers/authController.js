@@ -48,13 +48,75 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: 'Email ose password i gabuar' });
     }
 
-    const token = jwt.sign(
+    const accessToken = jwt.sign(
       { id: user.id, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN }
     );
 
-    res.status(200).json({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
+    const refreshToken = jwt.sign(
+      { id: user.id },
+      process.env.REFRESH_TOKEN_SECRET,
+      { expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN }
+    );
+
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    await pool.query(
+      'INSERT INTO refresh_tokens (user_id, token, expires_at) VALUES (?, ?, ?)',
+      [user.id, refreshToken, expiresAt]
+    );
+
+    res.status(200).json({
+      accessToken,
+      refreshToken,
+      user: { id: user.id, name: user.name, email: user.email, role: user.role }
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: 'Gabim në server', error: error.message });
+  }
+};
+
+export const refresh = async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+      return res.status(401).json({ message: 'Refresh token mungon' });
+    }
+
+    const [tokens] = await pool.query(
+      'SELECT * FROM refresh_tokens WHERE token = ?', [refreshToken]
+    );
+
+    if (tokens.length === 0) {
+      return res.status(403).json({ message: 'Refresh token i pavlefshëm' });
+    }
+
+    const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+
+    const accessToken = jwt.sign(
+      { id: decoded.id, role: decoded.role },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRES_IN }
+    );
+
+    res.status(200).json({ accessToken });
+
+  } catch (error) {
+    res.status(403).json({ message: 'Refresh token i pavlefshëm', error: error.message });
+  }
+};
+
+export const logout = async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+
+    await pool.query(
+      'DELETE FROM refresh_tokens WHERE token = ?', [refreshToken]
+    );
+
+    res.status(200).json({ message: 'Logout me sukses' });
 
   } catch (error) {
     res.status(500).json({ message: 'Gabim në server', error: error.message });

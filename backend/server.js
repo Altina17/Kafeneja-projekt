@@ -8,6 +8,12 @@ import kategoriRoute from './routes/kategoriRoute.js';
 import porosiRoute from './routes/porosiRoute.js';
 import tavolinaRoute from './routes/tavolinaRoute.js';
 import punetoriRoute from './routes/punetoriRoute.js';
+import inventariRoute from './routes/inventariRoute.js';
+import furnitoriRoute from './routes/furnitoriRoute.js';
+import rezervimiRoute from './routes/rezervimiRoute.js';
+import turniRoute from './routes/turniRoute.js';
+import shpenzimiRoute from './routes/shpenzimiRoute.js';
+import porositeFurnitorRoute from './routes/porositeFurnitorRoute.js';
 
 const app = express();
 
@@ -15,19 +21,18 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/api/employees', punetoriRoute);
-app.use('/api/users', userRoute); 
-app.use('/api/auth', authRoute); //shtimi i auth route
-app.use('/api/products', produktiRoute); //  shtimi i route-produktete
-app.use('/api/categories', kategoriRoute); //shtimi i route-kategori
-app.use('/api/orders', porosiRoute); //shtimi i route - porosi
-app.use('/api/tables', tavolinaRoute); //shtim i route per tavolinat
-
-app.get('/api/employees/test', (req, res) => {
-  res.json({ message: 'employees works!' });
-});
-
-
-console.log('Employees route registered!');
+app.use('/api/users', userRoute);
+app.use('/api/auth', authRoute);
+app.use('/api/products', produktiRoute);
+app.use('/api/categories', kategoriRoute);
+app.use('/api/orders', porosiRoute);
+app.use('/api/tables', tavolinaRoute);
+app.use('/api/inventari', inventariRoute);
+app.use('/api/furnitoret', furnitoriRoute);
+app.use('/api/rezervimet', rezervimiRoute);
+app.use('/api/turnet', turniRoute);
+app.use('/api/shpenzimet', shpenzimiRoute);
+app.use('/api/porosite-furnitor', porositeFurnitorRoute);
 
 app.get('/', (req, res) => {
   res.send("HI!");

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import API from '../api/axios';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -13,8 +12,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await API.post('/auth/login', { email, password });
-      login(res.data.user, res.data.token);
+      await login(email, password);
       navigate('/dashboard');
     } catch (err) {
       setError('Email ose password i gabuar!');
