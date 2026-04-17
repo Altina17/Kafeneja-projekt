@@ -10,6 +10,8 @@ import Rezervimet from '../pages/Rezervimet';
 import Turnet from '../pages/Turnet';
 import Shpenzimet from '../pages/Shpenzimet';
 import PorositeFurnitor from '../pages/PorositeFurnitor';
+import Punetoret from '../pages/Punetoret';
+import Tavolinat from '../pages/Tavolinat';
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
@@ -27,8 +29,8 @@ const Dashboard = () => {
       case 'produktet': return <Produktet />;
       case 'kategorite': return <Kategorite />;
       case 'porosite': return <Porosite />;
-      case 'punetoret': return <div>Punetoret CRUD</div>;
-      case 'tavolinat': return <div>Tavolinat CRUD</div>;
+      case 'punetoret': return <Punetoret />;
+      case 'tavolinat': return <Tavolinat />;
       case 'inventari': return <Inventari />;
       case 'furnitori': return <Furnitori />;
       case 'rezervimet': return <Rezervimet />;
