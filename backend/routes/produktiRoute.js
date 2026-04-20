@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { getProducts, getProduct, postProduct, putProduct, removeProduct } from '../controllers/produktiController.js';
-import { protect } from '../middleware/authMiddleware.js';
+import { verifyToken as protect } from '../middleware/authMiddleware.js';
 
 const router = Router();
 

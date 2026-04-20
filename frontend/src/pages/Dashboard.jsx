@@ -4,15 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import Produktet from '../pages/Produktet';
 import Kategorite from '../pages/Kategorite';
 import Porosite from '../pages/Porosite';
-<<<<<<< HEAD
-=======
 import Inventari from '../pages/Inventari';
 import Furnitori from '../pages/Furnitori';
 import Rezervimet from '../pages/Rezervimet';
 import Turnet from '../pages/Turnet';
 import Shpenzimet from '../pages/Shpenzimet';
 import PorositeFurnitor from '../pages/PorositeFurnitor';
->>>>>>> 02b2f02def3908efff7c0705b18b4260120059d8
 import Punetoret from '../pages/Punetoret';
 import Tavolinat from '../pages/Tavolinat';
 
@@ -31,11 +28,10 @@ const Dashboard = () => {
       case 'home': return <Home />;
       case 'produktet': return <Produktet />;
       case 'kategorite': return <Kategorite />;
-<<<<<<< HEAD
       case 'porosite': return <Porosite/>;
       case 'punetoret': return <Punetoret/>;
       case 'tavolinat': return <Tavolinat/>;
-=======
+
       case 'porosite': return <Porosite />;
       case 'punetoret': return <Punetoret />;
       case 'tavolinat': return <Tavolinat />;
@@ -45,7 +41,7 @@ const Dashboard = () => {
       case 'turnet': return <Turnet />;
       case 'shpenzimet': return <Shpenzimet />;
       case 'porositefurnitor': return <PorositeFurnitor />;
->>>>>>> 02b2f02def3908efff7c0705b18b4260120059d8
+
       default: return <Home />;
     }
   };
