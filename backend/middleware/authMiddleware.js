@@ -16,3 +16,4 @@ export const verifyToken = (req, res, next) => {
     return res.status(403).json({ message: 'Token i pavlefshëm' });
   }
 };
+export const protect = verifyToken;

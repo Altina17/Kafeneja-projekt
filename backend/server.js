@@ -14,6 +14,8 @@ import rezervimiRoute from './routes/rezervimiRoute.js';
 import turniRoute from './routes/turniRoute.js';
 import shpenzimiRoute from './routes/shpenzimiRoute.js';
 import porositeFurnitorRoute from './routes/porositeFurnitorRoute.js';
+import recetaRoute from './routes/recetaRoute.js';
+import pushimiRoute from './routes/pushimiRoute.js';
 
 const app = express();
 
@@ -33,6 +35,8 @@ app.use('/api/rezervimet', rezervimiRoute);
 app.use('/api/turnet', turniRoute);
 app.use('/api/shpenzimet', shpenzimiRoute);
 app.use('/api/porosite-furnitor', porositeFurnitorRoute);
+app.use('/api/receta', recetaRoute);
+app.use('/api/lejet', pushimiRoute);
 
 app.get('/', (req, res) => {
   res.send("HI!");
