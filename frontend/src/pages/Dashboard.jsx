@@ -13,6 +13,7 @@ import PorositeFurnitor from '../pages/PorositeFurnitor';
 import Punetoret from '../pages/Punetoret';
 import Tavolinat from '../pages/Tavolinat';
 import RecetaPerberesit from '../pages/RecetaPerberesit';
+import Pushimet from '../pages/Pushimet';
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
@@ -43,6 +44,7 @@ const Dashboard = () => {
       case 'shpenzimet': return <Shpenzimet />;
       case 'porositefurnitor': return <PorositeFurnitor />;
       case 'receta': return <RecetaPerberesit />;
+      case 'pushimet': return <Pushimet />;
 
       default: return <Home />;
     }
@@ -88,6 +90,7 @@ const Dashboard = () => {
           <button onClick={() => setActivePage('shpenzimet')} className={`text-left p-3 rounded hover:bg-gray-700 ${activePage === 'shpenzimet' ? 'bg-gray-700' : ''}`}>💰 Shpenzimet</button>
           <button onClick={() => setActivePage('porositefurnitor')} className={`text-left p-3 rounded hover:bg-gray-700 ${activePage === 'porositefurnitor' ? 'bg-gray-700' : ''}`}>📝 Porositë Furnitor</button>
           <button onClick={() => setActivePage('receta')} className={`text-left p-3 rounded hover:bg-gray-700 transition-colors ${activePage === 'receta' ? 'bg-gray-700' : ''}`}>🍽️ Receta & Përbërësit</button>
+          <button onClick={() => setActivePage('pushimet')} className={`text-left p-3 rounded hover:bg-gray-700 transition-colors ${activePage === 'pushimet' ? 'bg-gray-700' : ''}`}>🏖️ Pushimet</button>
         </nav>
         <div className="mt-auto p-4">
           <button onClick={handleLogout} className="w-full p-3 bg-red-600 rounded hover:bg-red-700">Dil</button>
