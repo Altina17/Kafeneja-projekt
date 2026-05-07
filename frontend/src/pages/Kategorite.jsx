@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import API from '../api/axios';
+import { toast } from 'react-toastify';
 
 const Kategorite = () => {
   const [kategorite, setKategorite] = useState([]);
@@ -18,15 +19,21 @@ const Kategorite = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (editData) {
-      await API.put(`/categories/${editData.kategori_id}`, form);
-    } else {
-      await API.post('/categories', form);
+    try {
+      if (editData) {
+        await API.put(`/categories/${editData.kategori_id}`, form);
+        toast.success(`Kategoria "${form.emri}" u ndryshua me sukses!`);
+      } else {
+        await API.post('/categories', form);
+        toast.success(`Kategoria "${form.emri}" u shtua me sukses!`);
+      }
+      setForm({ emri: '', pershkrimi: '' });
+      setShowForm(false);
+      setEditData(null);
+      fetchKategorite();
+    } catch (error) {
+      toast.error('Ndodhi një gabim!');
     }
-    setForm({ emri: '', pershkrimi: '' });
-    setShowForm(false);
-    setEditData(null);
-    fetchKategorite();
   };
 
   const handleEdit = (kategori) => {
@@ -35,10 +42,15 @@ const Kategorite = () => {
     setShowForm(true);
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm('A je i sigurt?')) {
-      await API.delete(`/categories/${id}`);
-      fetchKategorite();
+  const handleDelete = async (id, emri) => {
+    if (window.confirm(`A je i sigurt që dëshiron të fshish "${emri}"?`)) {
+      try {
+        await API.delete(`/categories/${id}`);
+        toast.success(`Kategoria "${emri}" u fshi me sukses!`);
+        fetchKategorite();
+      } catch (error) {
+        toast.error('Ndodhi një gabim gjatë fshirjes!');
+      }
     }
   };
 
@@ -72,23 +84,25 @@ const Kategorite = () => {
         </div>
       )}
 
-      <div className="bg-white rounded shadow overflow-hidden">
+      <div className="bg-white rounded shadow overflow-x-auto">
         <table className="w-full">
           <thead className="bg-gray-50">
             <tr>
-              <th className="text-left p-4">Emri</th>
-              <th className="text-left p-4">Pershkrimi</th>
-              <th className="text-left p-4">Veprimet</th>
+              <th className="text-left p-2 text-sm">Emri</th>
+              <th className="text-left p-2 text-sm">Pershkrimi</th>
+              <th className="text-left p-2 text-sm">Veprimet</th>
             </tr>
           </thead>
           <tbody>
             {kategorite.map((k) => (
               <tr key={k.kategori_id} className="border-t">
-                <td className="p-4">{k.emri}</td>
-                <td className="p-4">{k.pershkrimi}</td>
-                <td className="p-4 flex gap-2">
-                  <button onClick={() => handleEdit(k)} className="bg-yellow-400 text-white px-3 py-1 rounded hover:bg-yellow-500">Ndrysho</button>
-                  <button onClick={() => handleDelete(k.kategori_id)} className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Fshij</button>
+                <td className="p-2 text-sm">{k.emri}</td>
+                <td className="p-2 text-sm">{k.pershkrimi}</td>
+                <td className="p-2">
+                  <div className="flex gap-1">
+                    <button onClick={() => handleEdit(k)} className="bg-yellow-400 text-white px-2 py-1 rounded text-xs">Ndrysho</button>
+                    <button onClick={() => handleDelete(k.kategori_id, k.emri)} className="bg-red-500 text-white px-2 py-1 rounded text-xs">Fshij</button>
+                  </div>
                 </td>
               </tr>
             ))}
