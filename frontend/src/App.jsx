@@ -1,109 +1,69 @@
 import { Routes, Route } from 'react-router-dom';
+import { lazy, Suspense } from 'react';
 import ProtectedRoute from './components/ProtectedRoute';
 
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
-import Produktet from './pages/Produktet';
-import Kategorite from './pages/Kategorite';
-import Porosite from './pages/Porosite';
-import Tavolinat from './pages/Tavolinat';
-import Punetoret from './pages/Punetoret';
-import Inventari from './pages/Inventari';
-import Furnitori from './pages/Furnitori';
-import PorositeFurnitor from './pages/PorositeFurnitor';
-import Rezervimet from './pages/Rezervimet';
-import Turnet from './pages/Turnet';
-import Shpenzimet from './pages/Shpenzimet';
+const Login = lazy(() => import('./pages/Login'));
+const Register = lazy(() => import('./pages/Register'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Produktet = lazy(() => import('./pages/Produktet'));
+const Kategorite = lazy(() => import('./pages/Kategorite'));
+const Porosite = lazy(() => import('./pages/Porosite'));
+const Tavolinat = lazy(() => import('./pages/Tavolinat'));
+const Punetoret = lazy(() => import('./pages/Punetoret'));
+const Inventari = lazy(() => import('./pages/Inventari'));
+const Furnitori = lazy(() => import('./pages/Furnitori'));
+const PorositeFurnitor = lazy(() => import('./pages/PorositeFurnitor'));
+const Rezervimet = lazy(() => import('./pages/Rezervimet'));
+const Turnet = lazy(() => import('./pages/Turnet'));
+const Shpenzimet = lazy(() => import('./pages/Shpenzimet'));
 
 function App() {
   return (
-    <Routes>
-
-      {/* Publike */}
-      <Route path="/" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-
-      {/* Dashboard — vetem admin */}
-      <Route path="/dashboard" element={
-        <ProtectedRoute adminOnly={true}>
-          <Dashboard />
-        </ProtectedRoute>
-      } />
-
-      {/* Menyja */}
-      <Route path="/produktet" element={
-        <ProtectedRoute>
-          <Produktet />
-        </ProtectedRoute>
-      } />
-      <Route path="/kategorite" element={
-        <ProtectedRoute>
-          <Kategorite />
-        </ProtectedRoute>
-      } />
-
-      {/* Porositë */}
-      <Route path="/porosite" element={
-        <ProtectedRoute>
-          <Porosite />
-        </ProtectedRoute>
-      } />
-
-      {/* Tavolinat */}
-      <Route path="/tavolinat" element={
-        <ProtectedRoute>
-          <Tavolinat />
-        </ProtectedRoute>
-      } />
-
-      {/* Stafi */}
-      <Route path="/punetoret" element={
-        <ProtectedRoute adminOnly={true}>
-          <Punetoret />
-        </ProtectedRoute>
-      } />
-      <Route path="/turnet" element={
-        <ProtectedRoute adminOnly={true}>
-          <Turnet />
-        </ProtectedRoute>
-      } />
-
-      {/* Inventari dhe furnitoret — vetem admin */}
-      <Route path="/inventari" element={
-        <ProtectedRoute adminOnly={true}>
-          <Inventari />
-        </ProtectedRoute>
-      } />
-      <Route path="/furnitoret" element={
-        <ProtectedRoute adminOnly={true}>
-          <Furnitori />
-        </ProtectedRoute>
-      } />
-      <Route path="/porosite-furnitor" element={
-        <ProtectedRoute adminOnly={true}>
-          <PorositeFurnitor />
-        </ProtectedRoute>
-      } />
-
-      {/* Financat — vetem admin */}
-      <Route path="/shpenzimet" element={
-        <ProtectedRoute adminOnly={true}>
-          <Shpenzimet />
-        </ProtectedRoute>
-      } />
-
-      {/* Rezervimet */}
-      <Route path="/rezervimet" element={
-        <ProtectedRoute>
-          <Rezervimet />
-        </ProtectedRoute>
-      } />
-
-      {/* 404 — ridrejto tek login */}
-      <Route path="*" element={<Login />} />
-
-    </Routes>
+    <Suspense fallback={<div className="flex items-center justify-center h-screen text-xl">Duke u ngarkuar...</div>}>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/dashboard" element={
+          <ProtectedRoute adminOnly={true}>
+            <Dashboard />
+          </ProtectedRoute>
+        } />
+        <Route path="/produktet" element={
+          <ProtectedRoute><Produktet /></ProtectedRoute>
+        } />
+        <Route path="/kategorite" element={
+          <ProtectedRoute><Kategorite /></ProtectedRoute>
+        } />
+        <Route path="/porosite" element={
+          <ProtectedRoute><Porosite /></ProtectedRoute>
+        } />
+        <Route path="/tavolinat" element={
+          <ProtectedRoute><Tavolinat /></ProtectedRoute>
+        } />
+        <Route path="/punetoret" element={
+          <ProtectedRoute adminOnly={true}><Punetoret /></ProtectedRoute>
+        } />
+        <Route path="/turnet" element={
+          <ProtectedRoute adminOnly={true}><Turnet /></ProtectedRoute>
+        } />
+        <Route path="/inventari" element={
+          <ProtectedRoute adminOnly={true}><Inventari /></ProtectedRoute>
+        } />
+        <Route path="/furnitoret" element={
+          <ProtectedRoute adminOnly={true}><Furnitori /></ProtectedRoute>
+        } />
+        <Route path="/porosite-furnitor" element={
+          <ProtectedRoute adminOnly={true}><PorositeFurnitor /></ProtectedRoute>
+        } />
+        <Route path="/shpenzimet" element={
+          <ProtectedRoute adminOnly={true}><Shpenzimet /></ProtectedRoute>
+        } />
+        <Route path="/rezervimet" element={
+          <ProtectedRoute><Rezervimet /></ProtectedRoute>
+        } />
+        <Route path="*" element={<Login />} />
+      </Routes>
+    </Suspense>
   );
 }
 
