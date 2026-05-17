@@ -98,7 +98,7 @@ const Produktet = () => {
           <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
             <input className="border p-2 rounded" placeholder="Emri" value={form.emri} onChange={(e) => setForm({...form, emri: e.target.value})} required />
             <input className="border p-2 rounded" placeholder="Cmimi" type="number" value={form.cmimi} onChange={(e) => setForm({...form, cmimi: e.target.value})} required />
-            <select className="border p-2 rounded" value={form.kategoria_id} onChange={(e) => setForm({...form, kategoria_id: e.target.value})}>
+            <select className="border p-2 rounded" value={form.kategoria_id} onChange={(e) => setForm({...form, kategoria_id: e.target.value})} required>
               <option value="">Zgjidh kategorinë</option>
               {kategorite.map(k => (
                 <option key={k.kategori_id} value={k.kategori_id}>{k.emri}</option>
