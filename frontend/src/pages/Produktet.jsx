@@ -4,6 +4,8 @@ import { toast } from 'react-toastify';
 
 const Produktet = () => {
   const [produktet, setProduktet] = useState([]);
+  const [kerkim, setKerkim] = useState('');
+  const [filtriStatusi, setFiltriStatusi] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [editData, setEditData] = useState(null);
   const [form, setForm] = useState({
@@ -15,9 +17,13 @@ const Produktet = () => {
     setProduktet(res.data);
   };
 
-  useEffect(() => {
-    fetchProduktet();
-  }, []);
+  useEffect(() => { fetchProduktet(); }, []);
+
+  const produktetFiltruar = produktet.filter(p => {
+    const perputhetKerkim = p.emri?.toLowerCase().includes(kerkim.toLowerCase());
+    const perputhetStatusi = filtriStatusi === '' || p.statusi === filtriStatusi;
+    return perputhetKerkim && perputhetStatusi;
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -68,6 +74,26 @@ const Produktet = () => {
         </button>
       </div>
 
+      {/* Filtrat dhe Kërkimi */}
+      <div className="flex gap-3 mb-4">
+        <input
+          type="text"
+          placeholder="🔍 Kërko produkt..."
+          className="border p-2 rounded w-64"
+          value={kerkim}
+          onChange={e => setKerkim(e.target.value)}
+        />
+        <select
+          className="border p-2 rounded"
+          value={filtriStatusi}
+          onChange={e => setFiltriStatusi(e.target.value)}
+        >
+          <option value="">Të gjitha statuset</option>
+          <option value="aktiv">Aktiv</option>
+          <option value="joaktiv">Joaktiv</option>
+        </select>
+      </div>
+
       {showForm && (
         <div className="bg-white p-6 rounded shadow mb-6">
           <h2 className="text-lg font-bold mb-4">{editData ? 'Ndrysho Produkt' : 'Shto Produkt'}</h2>
@@ -99,19 +125,23 @@ const Produktet = () => {
             </tr>
           </thead>
           <tbody>
-            {produktet.map((p) => (
-              <tr key={p.produkt_id} className="border-t">
-                <td className="p-2 text-sm">{p.emri}</td>
-                <td className="p-2 text-sm">{p.cmimi}€</td>
-                <td className="p-2 text-sm">{p.statusi}</td>
-                <td className="p-2">
-                  <div className="flex gap-1">
-                    <button onClick={() => handleEdit(p)} className="bg-yellow-400 text-white px-2 py-1 rounded text-xs">Ndrysho</button>
-                    <button onClick={() => handleDelete(p.produkt_id, p.emri)} className="bg-red-500 text-white px-2 py-1 rounded text-xs">Fshij</button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+            {produktetFiltruar.length === 0 ? (
+              <tr><td colSpan="4" className="p-4 text-center text-gray-500">Nuk u gjet asnjë produkt!</td></tr>
+            ) : (
+              produktetFiltruar.map((p) => (
+                <tr key={p.produkt_id} className="border-t">
+                  <td className="p-2 text-sm">{p.emri}</td>
+                  <td className="p-2 text-sm">{p.cmimi}€</td>
+                  <td className="p-2 text-sm">{p.statusi}</td>
+                  <td className="p-2">
+                    <div className="flex gap-1">
+                      <button onClick={() => handleEdit(p)} className="bg-yellow-400 text-white px-2 py-1 rounded text-xs">Ndrysho</button>
+                      <button onClick={() => handleDelete(p.produkt_id, p.emri)} className="bg-red-500 text-white px-2 py-1 rounded text-xs">Fshij</button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
