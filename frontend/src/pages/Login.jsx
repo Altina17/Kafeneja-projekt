@@ -12,9 +12,13 @@ const Login = () => {
   const validate = () => {
     const newErrors = {};
     if (!email) newErrors.email = 'Email është i detyrueshëm!';
-    else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = 'Email nuk është valid!';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) newErrors.email = 'Email duhet të jetë valid (p.sh. emri@gmail.com)!';
     if (!password) newErrors.password = 'Fjalëkalimi është i detyrueshëm!';
-    else if (password.length < 6) newErrors.password = 'Fjalëkalimi duhet të ketë minimum 6 karaktere!';
+    else if (password.length < 8) newErrors.password = 'Fjalëkalimi duhet të ketë minimum 8 karaktere!';
+    else if (!/[A-Z]/.test(password)) newErrors.password = 'Duhet të paktën 1 shkronjë e madhe!';
+    else if (!/[a-z]/.test(password)) newErrors.password = 'Duhet të paktën 1 shkronjë e vogël!';
+    else if (!/[0-9]/.test(password)) newErrors.password = 'Duhet të paktën 1 numër!';
+    else if (!/[!@#$%^&*]/.test(password)) newErrors.password = 'Duhet të paktën 1 shenjë (!@#$%^&*)!';
     return newErrors;
   };
 
@@ -54,7 +58,7 @@ const Login = () => {
             <label className="block text-sm font-medium text-gray-400 mb-1">Email</label>
             <input
               type="email"
-              placeholder="email@kafeneja.com"
+              placeholder="emri@gmail.com"
               autoComplete="off"
               className={`w-full bg-gray-700 border text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500 ${errors.email ? 'border-red-500' : 'border-gray-600'}`}
               value={email}
