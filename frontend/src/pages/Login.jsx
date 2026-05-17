@@ -5,17 +5,31 @@ import { useAuth } from '../context/AuthContext';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState({});
   const { login } = useAuth();
   const navigate = useNavigate();
 
+  const validate = () => {
+    const newErrors = {};
+    if (!email) newErrors.email = 'Email është i detyrueshëm!';
+    else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = 'Email nuk është valid!';
+    if (!password) newErrors.password = 'Fjalëkalimi është i detyrueshëm!';
+    else if (password.length < 6) newErrors.password = 'Fjalëkalimi duhet të ketë minimum 6 karaktere!';
+    return newErrors;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const newErrors = validate();
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
     try {
       await login(email, password);
       navigate('/dashboard');
     } catch (err) {
-      setError('Email ose password i gabuar!');
+      setErrors({ general: 'Email ose password i gabuar!' });
     }
   };
 
@@ -29,9 +43,9 @@ const Login = () => {
           <p className="text-gray-400 text-sm mt-1">Sistemi i Menaxhimit</p>
         </div>
 
-        {error && (
+        {errors.general && (
           <div className="bg-red-900 border border-red-700 text-red-300 px-4 py-2 rounded-lg mb-4 text-sm text-center">
-            {error}
+            {errors.general}
           </div>
         )}
 
@@ -42,11 +56,11 @@ const Login = () => {
               type="email"
               placeholder="email@kafeneja.com"
               autoComplete="off"
-              className="w-full bg-gray-700 border border-gray-600 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
+              className={`w-full bg-gray-700 border text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500 ${errors.email ? 'border-red-500' : 'border-gray-600'}`}
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
+              onChange={(e) => { setEmail(e.target.value); setErrors({}); }}
             />
+            {errors.email && <p className="text-red-400 text-xs mt-1">{errors.email}</p>}
           </div>
 
           <div className="mb-6">
@@ -55,11 +69,11 @@ const Login = () => {
               type="password"
               placeholder="••••••••"
               autoComplete="new-password"
-              className="w-full bg-gray-700 border border-gray-600 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
+              className={`w-full bg-gray-700 border text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500 ${errors.password ? 'border-red-500' : 'border-gray-600'}`}
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
+              onChange={(e) => { setPassword(e.target.value); setErrors({}); }}
             />
+            {errors.password && <p className="text-red-400 text-xs mt-1">{errors.password}</p>}
           </div>
 
           <button

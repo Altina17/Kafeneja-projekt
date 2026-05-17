@@ -11,7 +11,9 @@ const Register = () => {
   const validate = () => {
     const newErrors = {};
     if (!form.name) newErrors.name = 'Emri është i detyrueshëm!';
+    else if (form.name.length < 2) newErrors.name = 'Emri duhet të ketë minimum 2 karaktere!';
     if (!form.surname) newErrors.surname = 'Mbiemri është i detyrueshëm!';
+    else if (form.surname.length < 2) newErrors.surname = 'Mbiemri duhet të ketë minimum 2 karaktere!';
     if (!form.email) newErrors.email = 'Email është i detyrueshëm!';
     else if (!/\S+@\S+\.\S+/.test(form.email)) newErrors.email = 'Email nuk është valid!';
     if (!form.password) newErrors.password = 'Fjalëkalimi është i detyrueshëm!';
@@ -35,11 +37,16 @@ const Register = () => {
         password: form.password,
         role: 'admin'
       });
-      setSuccess('Useri u krijua me sukses!');
+      setSuccess('Useri u krijua me sukses! Po ridrejtoheni...');
       setTimeout(() => navigate('/'), 2000);
     } catch (err) {
       setErrors({ general: 'Gabim gjatë regjistrimit! Email mund të ekzistojë.' });
     }
+  };
+
+  const handleChange = (field, value) => {
+    setForm({...form, [field]: value});
+    setErrors({...errors, [field]: ''});
   };
 
   return (
@@ -72,7 +79,7 @@ const Register = () => {
               autoComplete="off"
               className={`w-full bg-gray-700 border text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500 ${errors.name ? 'border-red-500' : 'border-gray-600'}`}
               value={form.name}
-              onChange={(e) => setForm({...form, name: e.target.value})}
+              onChange={(e) => handleChange('name', e.target.value)}
             />
             {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name}</p>}
           </div>
@@ -85,7 +92,7 @@ const Register = () => {
               autoComplete="off"
               className={`w-full bg-gray-700 border text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500 ${errors.surname ? 'border-red-500' : 'border-gray-600'}`}
               value={form.surname}
-              onChange={(e) => setForm({...form, surname: e.target.value})}
+              onChange={(e) => handleChange('surname', e.target.value)}
             />
             {errors.surname && <p className="text-red-400 text-xs mt-1">{errors.surname}</p>}
           </div>
@@ -98,7 +105,7 @@ const Register = () => {
               autoComplete="off"
               className={`w-full bg-gray-700 border text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500 ${errors.email ? 'border-red-500' : 'border-gray-600'}`}
               value={form.email}
-              onChange={(e) => setForm({...form, email: e.target.value})}
+              onChange={(e) => handleChange('email', e.target.value)}
             />
             {errors.email && <p className="text-red-400 text-xs mt-1">{errors.email}</p>}
           </div>
@@ -111,7 +118,7 @@ const Register = () => {
               autoComplete="new-password"
               className={`w-full bg-gray-700 border text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500 ${errors.password ? 'border-red-500' : 'border-gray-600'}`}
               value={form.password}
-              onChange={(e) => setForm({...form, password: e.target.value})}
+              onChange={(e) => handleChange('password', e.target.value)}
             />
             {errors.password && <p className="text-red-400 text-xs mt-1">{errors.password}</p>}
           </div>
@@ -124,7 +131,7 @@ const Register = () => {
               autoComplete="new-password"
               className={`w-full bg-gray-700 border text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500 ${errors.confirmPassword ? 'border-red-500' : 'border-gray-600'}`}
               value={form.confirmPassword}
-              onChange={(e) => setForm({...form, confirmPassword: e.target.value})}
+              onChange={(e) => handleChange('confirmPassword', e.target.value)}
             />
             {errors.confirmPassword && <p className="text-red-400 text-xs mt-1">{errors.confirmPassword}</p>}
           </div>
