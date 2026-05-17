@@ -4,6 +4,8 @@ import { toast } from 'react-toastify';
 
 const Tavolinat = () => {
   const [tavolinat, setTavolinat] = useState([]);
+  const [kerkim, setKerkim] = useState('');
+  const [filtriStatusi, setFiltriStatusi] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState(null);
 
@@ -27,9 +29,15 @@ const Tavolinat = () => {
     fetchData();
   }, []);
 
+  const tavolinatFiltruar = tavolinat.filter(t => {
+    const perputhetKerkim = t.vendndodhja?.toLowerCase().includes(kerkim.toLowerCase()) ||
+      t.numri?.toString().includes(kerkim);
+    const perputhetStatusi = filtriStatusi === '' || t.statusi === filtriStatusi;
+    return perputhetKerkim && perputhetStatusi;
+  });
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       if (editId) {
         await API.put(`/tables/${editId}`, form);
@@ -38,14 +46,7 @@ const Tavolinat = () => {
         await API.post('/tables', form);
         toast.success('Tavolina u shtua me sukses!');
       }
-
-      setForm({
-        numri: '',
-        kapaciteti: '',
-        vendndodhja: '',
-        statusi: ''
-      });
-
+      setForm({ numri: '', kapaciteti: '', vendndodhja: '', statusi: '' });
       setEditId(null);
       setShowForm(false);
       fetchData();
@@ -76,22 +77,36 @@ const Tavolinat = () => {
     <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Tavolinat</h1>
-
         <button
           onClick={() => {
             setShowForm(!showForm);
             setEditId(null);
-            setForm({
-              numri: '',
-              kapaciteti: '',
-              vendndodhja: '',
-              statusi: ''
-            });
+            setForm({ numri: '', kapaciteti: '', vendndodhja: '', statusi: '' });
           }}
           className="bg-blue-500 text-white px-4 py-2 rounded"
         >
           + Shto Tavolinë
         </button>
+      </div>
+
+      <div className="flex gap-3 mb-4">
+        <input
+          type="text"
+          placeholder="🔍 Kërko tavolinë..."
+          className="border p-2 rounded w-64"
+          value={kerkim}
+          onChange={e => setKerkim(e.target.value)}
+        />
+        <select
+          className="border p-2 rounded"
+          value={filtriStatusi}
+          onChange={e => setFiltriStatusi(e.target.value)}
+        >
+          <option value="">Të gjitha statuset</option>
+          <option value="e lire">E lirë</option>
+          <option value="e zene">E zënë</option>
+          <option value="rezervuar">Rezervuar</option>
+        </select>
       </div>
 
       {showForm && (
@@ -105,7 +120,6 @@ const Tavolinat = () => {
               onChange={(e) => setForm({ ...form, numri: e.target.value })}
               required
             />
-
             <input
               className="border p-2 rounded"
               placeholder="Kapaciteti"
@@ -113,14 +127,12 @@ const Tavolinat = () => {
               value={form.kapaciteti}
               onChange={(e) => setForm({ ...form, kapaciteti: e.target.value })}
             />
-
             <input
               className="border p-2 rounded"
               placeholder="Vendndodhja"
               value={form.vendndodhja}
               onChange={(e) => setForm({ ...form, vendndodhja: e.target.value })}
             />
-
             <select
               className="border p-2 rounded"
               value={form.statusi}
@@ -131,7 +143,6 @@ const Tavolinat = () => {
               <option value="e zene">E zënë</option>
               <option value="rezervuar">Rezervuar</option>
             </select>
-
             <button
               type="submit"
               className="col-span-2 bg-green-600 text-white p-2 rounded"
@@ -152,31 +163,23 @@ const Tavolinat = () => {
             <th className="p-3 text-left">Veprimet</th>
           </tr>
         </thead>
-
         <tbody>
-          {tavolinat.map((item) => (
-            <tr key={item.tavolina_id} className="border-t">
-              <td className="p-3">{item.numri}</td>
-              <td className="p-3">{item.kapaciteti}</td>
-              <td className="p-3">{item.vendndodhja}</td>
-              <td className="p-3">{item.statusi}</td>
-              <td className="p-3 flex gap-2">
-                <button
-                  onClick={() => handleEdit(item)}
-                  className="bg-yellow-500 text-white px-2 py-1 rounded"
-                >
-                  Ndrysho
-                </button>
-
-                <button
-                  onClick={() => handleDelete(item.tavolina_id)}
-                  className="bg-red-500 text-white px-2 py-1 rounded"
-                >
-                  Fshi
-                </button>
-              </td>
-            </tr>
-          ))}
+          {tavolinatFiltruar.length === 0 ? (
+            <tr><td colSpan="5" className="p-4 text-center text-gray-500">Nuk u gjet asnjë tavolinë!</td></tr>
+          ) : (
+            tavolinatFiltruar.map((item) => (
+              <tr key={item.tavolina_id} className="border-t">
+                <td className="p-3">{item.numri}</td>
+                <td className="p-3">{item.kapaciteti}</td>
+                <td className="p-3">{item.vendndodhja}</td>
+                <td className="p-3">{item.statusi}</td>
+                <td className="p-3 flex gap-2">
+                  <button onClick={() => handleEdit(item)} className="bg-yellow-500 text-white px-2 py-1 rounded">Ndrysho</button>
+                  <button onClick={() => handleDelete(item.tavolina_id)} className="bg-red-500 text-white px-2 py-1 rounded">Fshi</button>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
     </div>
