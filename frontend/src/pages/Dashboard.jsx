@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import API from '../api/axios';
 import Produktet from '../pages/Produktet';
 import Kategorite from '../pages/Kategorite';
 import Porosite from '../pages/Porosite';
@@ -25,15 +26,73 @@ const Dashboard = () => {
     navigate('/');
   };
 
+  const Home = () => {
+    const [stats, setStats] = useState({ produktet: 0, porosite: 0, punetoret: 0, tavolinat: 0, rezervimet: 0, furnitoret: 0 });
+
+    useEffect(() => {
+      const fetchStats = async () => {
+        try {
+          const [prod, por, pun, tav, rez, fur] = await Promise.all([
+            API.get('/products'),
+            API.get('/orders'),
+            API.get('/employees'),
+            API.get('/tables'),
+            API.get('/rezervimet'),
+            API.get('/furnitoret'),
+          ]);
+          setStats({
+            produktet: prod.data.length,
+            porosite: por.data.length,
+            punetoret: pun.data.length,
+            tavolinat: tav.data.length,
+            rezervimet: rez.data.length,
+            furnitoret: fur.data.length,
+          });
+        } catch (err) {
+          console.error(err);
+        }
+      };
+      fetchStats();
+    }, []);
+
+    return (
+      <div>
+        <h1 className="text-2xl font-bold mb-6">Mirë se vini, {user?.name}! 👋</h1>
+        <div className="grid grid-cols-3 gap-6">
+          <div className="bg-white p-6 rounded shadow border-l-4 border-blue-500">
+            <h2 className="text-gray-500">Produktet</h2>
+            <p className="text-3xl font-bold text-blue-600">{stats.produktet}</p>
+          </div>
+          <div className="bg-white p-6 rounded shadow border-l-4 border-green-500">
+            <h2 className="text-gray-500">Porositë</h2>
+            <p className="text-3xl font-bold text-green-600">{stats.porosite}</p>
+          </div>
+          <div className="bg-white p-6 rounded shadow border-l-4 border-purple-500">
+            <h2 className="text-gray-500">Punetoret</h2>
+            <p className="text-3xl font-bold text-purple-600">{stats.punetoret}</p>
+          </div>
+          <div className="bg-white p-6 rounded shadow border-l-4 border-yellow-500">
+            <h2 className="text-gray-500">Tavolinat</h2>
+            <p className="text-3xl font-bold text-yellow-600">{stats.tavolinat}</p>
+          </div>
+          <div className="bg-white p-6 rounded shadow border-l-4 border-red-500">
+            <h2 className="text-gray-500">Rezervimet</h2>
+            <p className="text-3xl font-bold text-red-600">{stats.rezervimet}</p>
+          </div>
+          <div className="bg-white p-6 rounded shadow border-l-4 border-orange-500">
+            <h2 className="text-gray-500">Furnitoret</h2>
+            <p className="text-3xl font-bold text-orange-600">{stats.furnitoret}</p>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const renderContent = () => {
     switch(activePage) {
       case 'home': return <Home />;
       case 'produktet': return <Produktet />;
       case 'kategorite': return <Kategorite />;
-      case 'porosite': return <Porosite/>;
-      case 'punetoret': return <Punetoret/>;
-      case 'tavolinat': return <Tavolinat/>;
-
       case 'porosite': return <Porosite />;
       case 'punetoret': return <Punetoret />;
       case 'tavolinat': return <Tavolinat />;
@@ -45,30 +104,9 @@ const Dashboard = () => {
       case 'porositefurnitor': return <PorositeFurnitor />;
       case 'receta': return <RecetaPerberesit />;
       case 'pushimet': return <Pushimet />;
-
       default: return <Home />;
     }
   };
-
-  const Home = () => (
-    <div>
-      <h1 className="text-2xl font-bold mb-6">Mirë se vini, {user?.name}! 👋</h1>
-      <div className="grid grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded shadow">
-          <h2 className="text-gray-500">Produktet</h2>
-          <p className="text-3xl font-bold">0</p>
-        </div>
-        <div className="bg-white p-6 rounded shadow">
-          <h2 className="text-gray-500">Porositë</h2>
-          <p className="text-3xl font-bold">0</p>
-        </div>
-        <div className="bg-white p-6 rounded shadow">
-          <h2 className="text-gray-500">Punetoret</h2>
-          <p className="text-3xl font-bold">0</p>
-        </div>
-      </div>
-    </div>
-  );
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -89,8 +127,8 @@ const Dashboard = () => {
           <button onClick={() => setActivePage('turnet')} className={`text-left p-3 rounded hover:bg-gray-700 ${activePage === 'turnet' ? 'bg-gray-700' : ''}`}>🕐 Turnet</button>
           <button onClick={() => setActivePage('shpenzimet')} className={`text-left p-3 rounded hover:bg-gray-700 ${activePage === 'shpenzimet' ? 'bg-gray-700' : ''}`}>💰 Shpenzimet</button>
           <button onClick={() => setActivePage('porositefurnitor')} className={`text-left p-3 rounded hover:bg-gray-700 ${activePage === 'porositefurnitor' ? 'bg-gray-700' : ''}`}>📝 Porositë Furnitor</button>
-          <button onClick={() => setActivePage('receta')} className={`text-left p-3 rounded hover:bg-gray-700 transition-colors ${activePage === 'receta' ? 'bg-gray-700' : ''}`}>🍽️ Receta & Përbërësit</button>
-          <button onClick={() => setActivePage('pushimet')} className={`text-left p-3 rounded hover:bg-gray-700 transition-colors ${activePage === 'pushimet' ? 'bg-gray-700' : ''}`}>🏖️ Pushimet</button>
+          <button onClick={() => setActivePage('receta')} className={`text-left p-3 rounded hover:bg-gray-700 ${activePage === 'receta' ? 'bg-gray-700' : ''}`}>📖 Receta</button>
+          <button onClick={() => setActivePage('pushimet')} className={`text-left p-3 rounded hover:bg-gray-700 ${activePage === 'pushimet' ? 'bg-gray-700' : ''}`}>🏖️ Pushimet</button>
         </nav>
         <div className="mt-auto p-4">
           <button onClick={handleLogout} className="w-full p-3 bg-red-600 rounded hover:bg-red-700">Dil</button>
