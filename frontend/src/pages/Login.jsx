@@ -20,32 +20,58 @@ const Login = () => {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded shadow-md w-96">
-        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
-        {error && <p className="text-red-500 mb-4">{error}</p>}
+    <div className="flex items-center justify-center h-screen bg-gray-900">
+      <div className="bg-gray-800 p-10 rounded-2xl shadow-2xl w-96 border border-gray-700">
+        
+        {/* Logo */}
+        <div className="text-center mb-8">
+          <div className="text-5xl mb-3">☕</div>
+          <h1 className="text-3xl font-bold text-white">Kafeneja</h1>
+          <p className="text-gray-400 text-sm mt-1">Sistemi i Menaxhimit</p>
+        </div>
+
+        {/* Error */}
+        {error && (
+          <div className="bg-red-900 border border-red-700 text-red-300 px-4 py-2 rounded-lg mb-4 text-sm text-center">
+            {error}
+          </div>
+        )}
+
+        {/* Form */}
         <form onSubmit={handleSubmit}>
-          <input
-            type="email"
-            placeholder="Email"
-            className="w-full border p-2 mb-4 rounded"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            className="w-full border p-2 mb-4 rounded"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-400 mb-1">Email</label>
+            <input
+              type="email"
+              placeholder="email@kafeneja.com"
+              className="w-full bg-gray-700 border border-gray-600 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-400 mb-1">Fjalëkalimi</label>
+            <input
+              type="password"
+              placeholder="••••••••"
+              className="w-full bg-gray-700 border border-gray-600 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold p-3 rounded-lg transition duration-200"
           >
-            Kyçu
+            Kyçu →
           </button>
         </form>
+
+        <p className="text-center text-gray-600 text-xs mt-6">© 2026 Kafeneja</p>
       </div>
     </div>
   );
