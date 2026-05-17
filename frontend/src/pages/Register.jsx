@@ -43,72 +43,108 @@ const Register = () => {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded shadow-md w-96">
-        <h2 className="text-2xl font-bold mb-6 text-center">Regjistrohu</h2>
-        {errors.general && <p className="text-red-500 mb-4">{errors.general}</p>}
-        {success && <p className="text-green-500 mb-4">{success}</p>}
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
+    <div className="flex items-center justify-center min-h-screen bg-gray-900 py-8">
+      <div className="bg-gray-800 p-10 rounded-2xl shadow-2xl w-96 border border-gray-700">
+        
+        <div className="text-center mb-8">
+          <div className="text-5xl mb-3">☕</div>
+          <h1 className="text-3xl font-bold text-white">Kafeneja</h1>
+          <p className="text-gray-400 text-sm mt-1">Krijo llogari të re</p>
+        </div>
+
+        {errors.general && (
+          <div className="bg-red-900 border border-red-700 text-red-300 px-4 py-2 rounded-lg mb-4 text-sm text-center">
+            {errors.general}
+          </div>
+        )}
+        {success && (
+          <div className="bg-green-900 border border-green-700 text-green-300 px-4 py-2 rounded-lg mb-4 text-sm text-center">
+            {success}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} autoComplete="off">
+          <div className="mb-3">
+            <label className="block text-sm font-medium text-gray-400 mb-1">Emri</label>
             <input
               type="text"
               placeholder="Emri"
-              className={`w-full border p-2 rounded ${errors.name ? 'border-red-500' : ''}`}
+              autoComplete="off"
+              className={`w-full bg-gray-700 border text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500 ${errors.name ? 'border-red-500' : 'border-gray-600'}`}
               value={form.name}
               onChange={(e) => setForm({...form, name: e.target.value})}
             />
-            {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+            {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name}</p>}
           </div>
-          <div className="mb-4">
+
+          <div className="mb-3">
+            <label className="block text-sm font-medium text-gray-400 mb-1">Mbiemri</label>
             <input
               type="text"
               placeholder="Mbiemri"
-              className={`w-full border p-2 rounded ${errors.surname ? 'border-red-500' : ''}`}
+              autoComplete="off"
+              className={`w-full bg-gray-700 border text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500 ${errors.surname ? 'border-red-500' : 'border-gray-600'}`}
               value={form.surname}
               onChange={(e) => setForm({...form, surname: e.target.value})}
             />
-            {errors.surname && <p className="text-red-500 text-sm mt-1">{errors.surname}</p>}
+            {errors.surname && <p className="text-red-400 text-xs mt-1">{errors.surname}</p>}
           </div>
-          <div className="mb-4">
+
+          <div className="mb-3">
+            <label className="block text-sm font-medium text-gray-400 mb-1">Email</label>
             <input
               type="email"
-              placeholder="Email"
-              className={`w-full border p-2 rounded ${errors.email ? 'border-red-500' : ''}`}
+              placeholder="email@kafeneja.com"
+              autoComplete="off"
+              className={`w-full bg-gray-700 border text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500 ${errors.email ? 'border-red-500' : 'border-gray-600'}`}
               value={form.email}
               onChange={(e) => setForm({...form, email: e.target.value})}
             />
-            {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+            {errors.email && <p className="text-red-400 text-xs mt-1">{errors.email}</p>}
           </div>
-          <div className="mb-4">
+
+          <div className="mb-3">
+            <label className="block text-sm font-medium text-gray-400 mb-1">Fjalëkalimi</label>
             <input
               type="password"
-              placeholder="Fjalëkalimi"
-              className={`w-full border p-2 rounded ${errors.password ? 'border-red-500' : ''}`}
+              placeholder="••••••••"
+              autoComplete="new-password"
+              className={`w-full bg-gray-700 border text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500 ${errors.password ? 'border-red-500' : 'border-gray-600'}`}
               value={form.password}
               onChange={(e) => setForm({...form, password: e.target.value})}
             />
-            {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
+            {errors.password && <p className="text-red-400 text-xs mt-1">{errors.password}</p>}
           </div>
+
           <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-400 mb-1">Konfirmo Fjalëkalimin</label>
             <input
               type="password"
-              placeholder="Konfirmo fjalëkalimin"
-              className={`w-full border p-2 rounded ${errors.confirmPassword ? 'border-red-500' : ''}`}
+              placeholder="••••••••"
+              autoComplete="new-password"
+              className={`w-full bg-gray-700 border text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500 ${errors.confirmPassword ? 'border-red-500' : 'border-gray-600'}`}
               value={form.confirmPassword}
               onChange={(e) => setForm({...form, confirmPassword: e.target.value})}
             />
-            {errors.confirmPassword && <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>}
+            {errors.confirmPassword && <p className="text-red-400 text-xs mt-1">{errors.confirmPassword}</p>}
           </div>
+
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold p-3 rounded-lg transition duration-200"
           >
-            Regjistrohu
+            Regjistrohu →
           </button>
         </form>
-        <p className="mt-4 text-center text-sm">
-          Ke llogari? <span onClick={() => navigate('/')} className="text-blue-500 cursor-pointer">Kyçu</span>
+
+        <p className="text-center text-gray-400 text-sm mt-6">
+          Ke llogari?{' '}
+          <span onClick={() => navigate('/')} className="text-blue-400 cursor-pointer hover:underline">
+            Kyçu
+          </span>
         </p>
+
+        <p className="text-center text-gray-600 text-xs mt-3">© 2025 Kafeneja</p>
       </div>
     </div>
   );
