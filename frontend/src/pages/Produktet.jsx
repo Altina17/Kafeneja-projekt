@@ -4,12 +4,13 @@ import { toast } from 'react-toastify';
 
 const Produktet = () => {
   const [produktet, setProduktet] = useState([]);
+  const [kategorite, setKategorite] = useState([]);
   const [kerkim, setKerkim] = useState('');
   const [filtriStatusi, setFiltriStatusi] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [editData, setEditData] = useState(null);
   const [form, setForm] = useState({
-    emri: '', kategoria_id: '', pershkrimi: '', cmimi: '', statusi: '', foto: ''
+    emri: '', kategoria_id: '', pershkrimi: '', cmimi: '', statusi: 'aktiv', foto: ''
   });
 
   const fetchProduktet = async () => {
@@ -17,7 +18,15 @@ const Produktet = () => {
     setProduktet(res.data);
   };
 
-  useEffect(() => { fetchProduktet(); }, []);
+  const fetchKategorite = async () => {
+    const res = await API.get('/categories');
+    setKategorite(res.data);
+  };
+
+  useEffect(() => {
+    fetchProduktet();
+    fetchKategorite();
+  }, []);
 
   const produktetFiltruar = produktet.filter(p => {
     const perputhetKerkim = p.emri?.toLowerCase().includes(kerkim.toLowerCase());
@@ -35,7 +44,7 @@ const Produktet = () => {
         await API.post('/products', form);
         toast.success(`Produkti "${form.emri}" u shtua me sukses!`);
       }
-      setForm({ emri: '', kategoria_id: '', pershkrimi: '', cmimi: '', statusi: '', foto: '' });
+      setForm({ emri: '', kategoria_id: '', pershkrimi: '', cmimi: '', statusi: 'aktiv', foto: '' });
       setShowForm(false);
       setEditData(null);
       fetchProduktet();
@@ -67,27 +76,16 @@ const Produktet = () => {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Produktet</h1>
         <button
-          onClick={() => { setShowForm(!showForm); setEditData(null); setForm({ emri: '', kategoria_id: '', pershkrimi: '', cmimi: '', statusi: '', foto: '' }); }}
+          onClick={() => { setShowForm(!showForm); setEditData(null); setForm({ emri: '', kategoria_id: '', pershkrimi: '', cmimi: '', statusi: 'aktiv', foto: '' }); }}
           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
         >
           + Shto Produkt
         </button>
       </div>
 
-      {/* Filtrat dhe Kërkimi */}
       <div className="flex gap-3 mb-4">
-        <input
-          type="text"
-          placeholder="🔍 Kërko produkt..."
-          className="border p-2 rounded w-64"
-          value={kerkim}
-          onChange={e => setKerkim(e.target.value)}
-        />
-        <select
-          className="border p-2 rounded"
-          value={filtriStatusi}
-          onChange={e => setFiltriStatusi(e.target.value)}
-        >
+        <input type="text" placeholder="🔍 Kërko produkt..." className="border p-2 rounded w-64" value={kerkim} onChange={e => setKerkim(e.target.value)} />
+        <select className="border p-2 rounded" value={filtriStatusi} onChange={e => setFiltriStatusi(e.target.value)}>
           <option value="">Të gjitha statuset</option>
           <option value="aktiv">Aktiv</option>
           <option value="joaktiv">Joaktiv</option>
@@ -100,8 +98,17 @@ const Produktet = () => {
           <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
             <input className="border p-2 rounded" placeholder="Emri" value={form.emri} onChange={(e) => setForm({...form, emri: e.target.value})} required />
             <input className="border p-2 rounded" placeholder="Cmimi" type="number" value={form.cmimi} onChange={(e) => setForm({...form, cmimi: e.target.value})} required />
-            <input className="border p-2 rounded" placeholder="Pershkrimi" value={form.pershkrimi} onChange={(e) => setForm({...form, pershkrimi: e.target.value})} />
-            <input className="border p-2 rounded" placeholder="Statusi" value={form.statusi} onChange={(e) => setForm({...form, statusi: e.target.value})} />
+            <select className="border p-2 rounded" value={form.kategoria_id} onChange={(e) => setForm({...form, kategoria_id: e.target.value})}>
+              <option value="">Zgjidh kategorinë</option>
+              {kategorite.map(k => (
+                <option key={k.kategori_id} value={k.kategori_id}>{k.emri}</option>
+              ))}
+            </select>
+            <select className="border p-2 rounded" value={form.statusi} onChange={(e) => setForm({...form, statusi: e.target.value})}>
+              <option value="aktiv">Aktiv</option>
+              <option value="joaktiv">Joaktiv</option>
+            </select>
+            <input className="border p-2 rounded col-span-2" placeholder="Pershkrimi" value={form.pershkrimi} onChange={(e) => setForm({...form, pershkrimi: e.target.value})} />
             <div className="col-span-2 flex gap-2">
               <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
                 {editData ? 'Ruaj Ndryshimet' : 'Shto'}
