@@ -4,10 +4,12 @@ import { toast } from 'react-toastify';
 
 const Porosite = () => {
   const [porosite, setPorosite] = useState([]);
+  const [tavolinat, setTavolinat] = useState([]);
+  const [punetoret, setPunetoret] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editData, setEditData] = useState(null);
   const [form, setForm] = useState({
-    tavolina_id: '', kamarier_id: '', shuma_totale: '', statusi: '', metoda_pageses: ''
+    tavolina_id: '', kamarier_id: '', shuma_totale: '', statusi: 'aktive', metoda_pageses: 'kesh'
   });
 
   const fetchPorosite = async () => {
@@ -15,21 +17,43 @@ const Porosite = () => {
     setPorosite(res.data);
   };
 
+  const fetchTavolinat = async () => {
+    const res = await API.get('/tables');
+    setTavolinat(res.data);
+  };
+
+  const fetchPunetoret = async () => {
+    const res = await API.get('/workers');
+    setPunetoret(res.data);
+  };
+
   useEffect(() => {
     fetchPorosite();
+    fetchTavolinat();
+    fetchPunetoret();
   }, []);
+
+  const emriTavolines = (id) => {
+    const t = tavolinat.find(t => t.tavolina_id === id);
+    return t ? `Tavolina ${t.numri}` : id;
+  };
+
+  const emriKamarierit = (id) => {
+    const p = punetoret.find(p => p.punetor_id === id);
+    return p ? `${p.emri} ${p.mbiemri}` : id;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       if (editData) {
         await API.put(`/orders/${editData.porosi_id}`, form);
-        toast.success(`Porosia u ndryshua me sukses!`);
+        toast.success('Porosia u ndryshua me sukses!');
       } else {
         await API.post('/orders', form);
-        toast.success(`Porosia u shtua me sukses!`);
+        toast.success('Porosia u shtua me sukses!');
       }
-      setForm({ tavolina_id: '', kamarier_id: '', shuma_totale: '', statusi: '', metoda_pageses: '' });
+      setForm({ tavolina_id: '', kamarier_id: '', shuma_totale: '', statusi: 'aktive', metoda_pageses: 'kesh' });
       setShowForm(false);
       setEditData(null);
       fetchPorosite();
@@ -45,10 +69,10 @@ const Porosite = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm(`A je i sigurt që dëshiron të fshish këtë porosi?`)) {
+    if (window.confirm('A je i sigurt që dëshiron të fshish këtë porosi?')) {
       try {
         await API.delete(`/orders/${id}`);
-        toast.success(`Porosia u fshi me sukses!`);
+        toast.success('Porosia u fshi me sukses!');
         fetchPorosite();
       } catch (error) {
         toast.error('Ndodhi një gabim gjatë fshirjes!');
@@ -56,12 +80,21 @@ const Porosite = () => {
     }
   };
 
+  const statusiBadge = (statusi) => {
+    const ngjyrat = {
+      aktive: 'bg-blue-100 text-blue-700',
+      perfunduar: 'bg-green-100 text-green-700',
+      anuluar: 'bg-red-100 text-red-700',
+    };
+    return ngjyrat[statusi] || 'bg-gray-100 text-gray-700';
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Porositë</h1>
         <button
-          onClick={() => { setShowForm(!showForm); setEditData(null); setForm({ tavolina_id: '', kamarier_id: '', shuma_totale: '', statusi: '', metoda_pageses: '' }); }}
+          onClick={() => { setShowForm(!showForm); setEditData(null); setForm({ tavolina_id: '', kamarier_id: '', shuma_totale: '', statusi: 'aktive', metoda_pageses: 'kesh' }); }}
           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
         >
           + Shto Porosi
@@ -72,11 +105,85 @@ const Porosite = () => {
         <div className="bg-white p-6 rounded shadow mb-6">
           <h2 className="text-lg font-bold mb-4">{editData ? 'Ndrysho Porosi' : 'Shto Porosi'}</h2>
           <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
-            <input className="border p-2 rounded" placeholder="Tavolina ID" value={form.tavolina_id} onChange={(e) => setForm({...form, tavolina_id: e.target.value})} />
-            <input className="border p-2 rounded" placeholder="Kamarier ID" value={form.kamarier_id} onChange={(e) => setForm({...form, kamarier_id: e.target.value})} />
-            <input className="border p-2 rounded" placeholder="Shuma Totale" type="number" value={form.shuma_totale} onChange={(e) => setForm({...form, shuma_totale: e.target.value})} />
-            <input className="border p-2 rounded" placeholder="Statusi" value={form.statusi} onChange={(e) => setForm({...form, statusi: e.target.value})} />
-            <input className="border p-2 rounded" placeholder="Metoda Pageses" value={form.metoda_pageses} onChange={(e) => setForm({...form, metoda_pageses: e.target.value})} />
+            
+            {/* Tavolina dropdown */}
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-1">Tavolina</label>
+              <select
+                className="border p-2 rounded w-full"
+                value={form.tavolina_id}
+                onChange={(e) => setForm({...form, tavolina_id: e.target.value})}
+                required
+              >
+                <option value="">Zgjidh tavolinën</option>
+                {tavolinat.map(t => (
+                  <option key={t.tavolina_id} value={t.tavolina_id}>
+                    Tavolina {t.numri} - Kapaciteti: {t.kapaciteti}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Kamarieri dropdown */}
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-1">Kamarieri</label>
+              <select
+                className="border p-2 rounded w-full"
+                value={form.kamarier_id}
+                onChange={(e) => setForm({...form, kamarier_id: e.target.value})}
+                required
+              >
+                <option value="">Zgjidh kamarierin</option>
+                {punetoret.map(p => (
+                  <option key={p.punetor_id} value={p.punetor_id}>
+                    {p.emri} {p.mbiemri} - {p.pozita}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Shuma */}
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-1">Shuma Totale (€)</label>
+              <input
+                className="border p-2 rounded w-full"
+                placeholder="0.00"
+                type="number"
+                step="0.01"
+                value={form.shuma_totale}
+                onChange={(e) => setForm({...form, shuma_totale: e.target.value})}
+                required
+              />
+            </div>
+
+            {/* Statusi dropdown */}
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-1">Statusi</label>
+              <select
+                className="border p-2 rounded w-full"
+                value={form.statusi}
+                onChange={(e) => setForm({...form, statusi: e.target.value})}
+              >
+                <option value="aktive">Aktive</option>
+                <option value="perfunduar">Përfunduar</option>
+                <option value="anuluar">Anuluar</option>
+              </select>
+            </div>
+
+            {/* Metoda e pageses dropdown */}
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-1">Metoda e Pagesës</label>
+              <select
+                className="border p-2 rounded w-full"
+                value={form.metoda_pageses}
+                onChange={(e) => setForm({...form, metoda_pageses: e.target.value})}
+              >
+                <option value="kesh">Kesh</option>
+                <option value="kartë">Kartë</option>
+                <option value="online">Online</option>
+              </select>
+            </div>
+
             <div className="col-span-2 flex gap-2">
               <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
                 {editData ? 'Ruaj Ndryshimet' : 'Shto'}
@@ -94,6 +201,7 @@ const Porosite = () => {
           <thead className="bg-gray-50">
             <tr>
               <th className="text-left p-2 text-sm">Tavolina</th>
+              <th className="text-left p-2 text-sm">Kamarieri</th>
               <th className="text-left p-2 text-sm">Shuma</th>
               <th className="text-left p-2 text-sm">Statusi</th>
               <th className="text-left p-2 text-sm">Metoda</th>
@@ -101,20 +209,29 @@ const Porosite = () => {
             </tr>
           </thead>
           <tbody>
-            {porosite.map((p) => (
-              <tr key={p.porosi_id} className="border-t">
-                <td className="p-2 text-sm">{p.tavolina_id}</td>
-                <td className="p-2 text-sm">{p.shuma_totale}€</td>
-                <td className="p-2 text-sm">{p.statusi}</td>
-                <td className="p-2 text-sm">{p.metoda_pageses}</td>
-                <td className="p-2">
-                  <div className="flex gap-1">
-                    <button onClick={() => handleEdit(p)} className="bg-yellow-400 text-white px-2 py-1 rounded text-xs">Ndrysho</button>
-                    <button onClick={() => handleDelete(p.porosi_id)} className="bg-red-500 text-white px-2 py-1 rounded text-xs">Fshij</button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+            {porosite.length === 0 ? (
+              <tr><td colSpan="6" className="p-4 text-center text-gray-500">Nuk ka porosi!</td></tr>
+            ) : (
+              porosite.map((p) => (
+                <tr key={p.porosi_id} className="border-t even:bg-gray-50">
+                  <td className="p-2 text-sm">{emriTavolines(p.tavolina_id)}</td>
+                  <td className="p-2 text-sm">{emriKamarierit(p.kamarier_id)}</td>
+                  <td className="p-2 text-sm">{p.shuma_totale}€</td>
+                  <td className="p-2 text-sm">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusiBadge(p.statusi)}`}>
+                      {p.statusi}
+                    </span>
+                  </td>
+                  <td className="p-2 text-sm">{p.metoda_pageses}</td>
+                  <td className="p-2">
+                    <div className="flex gap-1">
+                      <button onClick={() => handleEdit(p)} className="bg-yellow-400 text-white px-2 py-1 rounded text-xs">Ndrysho</button>
+                      <button onClick={() => handleDelete(p.porosi_id)} className="bg-red-500 text-white px-2 py-1 rounded text-xs">Fshij</button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
