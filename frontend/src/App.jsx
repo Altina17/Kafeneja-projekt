@@ -8,6 +8,7 @@ const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Produktet = lazy(() => import('./pages/Produktet'));
 const Kategorite = lazy(() => import('./pages/Kategorite'));
 const Porosite = lazy(() => import('./pages/Porosite'));
+const DetajetPorosise = lazy(() => import('./pages/DetajetPorosise'));
 const Tavolinat = lazy(() => import('./pages/Tavolinat'));
 const Punetoret = lazy(() => import('./pages/Punetoret'));
 const Inventari = lazy(() => import('./pages/Inventari'));
@@ -36,6 +37,9 @@ function App() {
         } />
         <Route path="/porosite" element={
           <ProtectedRoute><Porosite /></ProtectedRoute>
+        } />
+        <Route path="/detajet-porosise" element={
+          <ProtectedRoute><DetajetPorosise /></ProtectedRoute>
         } />
         <Route path="/tavolinat" element={
           <ProtectedRoute><Tavolinat /></ProtectedRoute>

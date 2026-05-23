@@ -6,6 +6,7 @@ import authRoute from './routes/authRoute.js';
 import produktiRoute from './routes/produktiRoute.js';
 import kategoriRoute from './routes/kategoriRoute.js';
 import porosiRoute from './routes/porosiRoute.js';
+import detajetPorosiseRoute from './routes/detajetPorosiseRoute.js';
 import tavolinaRoute from './routes/tavolinaRoute.js';
 import punetoriRoute from './routes/punetoriRoute.js';
 import inventariRoute from './routes/inventariRoute.js';
@@ -37,6 +38,7 @@ app.use('/api/shpenzimet', shpenzimiRoute);
 app.use('/api/porosite-furnitor', porositeFurnitorRoute);
 app.use('/api/receta', recetaRoute);
 app.use('/api/lejet', pushimiRoute);
+app.use('/api/detajet-porosise', detajetPorosiseRoute);
 
 app.get('/', (req, res) => {
   res.send("HI!");
