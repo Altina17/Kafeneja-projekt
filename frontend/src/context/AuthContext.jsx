@@ -4,28 +4,25 @@ import API, { setAccessToken } from '../api/axios';
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem('user');
+    return saved ? JSON.parse(saved) : null;
+  });
 
-  // Rinderto sesionin kur faqja rifrekohet
   useEffect(() => {
-    const savedUser = localStorage.getItem('user');
-    const savedRefresh = localStorage.getItem('refreshToken');
+    const refreshToken = localStorage.getItem('refreshToken');
+    if (!refreshToken) return;
 
-    if (savedUser && savedRefresh) {
-      setUser(JSON.parse(savedUser));
-      API.post('/auth/refresh', { refreshToken: savedRefresh })
-        .then(res => {
-          setAccessToken(res.data.accessToken);
-          if (res.data.refreshToken) {
-            localStorage.setItem('refreshToken', res.data.refreshToken);
-          }
-        })
-        .catch(() => {
-          setUser(null);
-          localStorage.removeItem('user');
-          localStorage.removeItem('refreshToken');
-        });
-    }
+    API.post('/auth/refresh', { refreshToken })
+      .then(res => {
+        setAccessToken(res.data.accessToken);
+        if (res.data.refreshToken) localStorage.setItem('refreshToken', res.data.refreshToken);
+      })
+      .catch(() => {
+        setUser(null);
+        localStorage.removeItem('user');
+        localStorage.removeItem('refreshToken');
+      });
   }, []);
 
   const login = async (email, password) => {
