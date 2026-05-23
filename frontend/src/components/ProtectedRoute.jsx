@@ -2,15 +2,16 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const ProtectedRoute = ({ children, adminOnly }) => {
-  const { user } = useAuth();
+  const { user, checking } = useAuth();
 
-  if (!user) {
-    return <Navigate to="/" />;
-  }
+  if (checking) return (
+    <div className="flex items-center justify-center h-screen text-xl text-gray-500">
+      Duke u ngarkuar...
+    </div>
+  );
 
-  if (adminOnly && user.role !== 'admin') {
-    return <Navigate to="/" />;
-  }
+  if (!user) return <Navigate to="/" />;
+  if (adminOnly && user.role !== 'admin') return <Navigate to="/" />;
 
   return children;
 };
