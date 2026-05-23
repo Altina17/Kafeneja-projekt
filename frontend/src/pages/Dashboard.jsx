@@ -5,6 +5,7 @@ import API from '../api/axios';
 import Produktet from '../pages/Produktet';
 import Kategorite from '../pages/Kategorite';
 import Porosite from '../pages/Porosite';
+import DetajetPorosise from '../pages/DetajetPorosise';
 import Inventari from '../pages/Inventari';
 import Furnitori from '../pages/Furnitori';
 import Rezervimet from '../pages/Rezervimet';
@@ -32,6 +33,7 @@ const Dashboard = () => {
     { key: 'produktet',        emoji: '🍽️', label: 'Produktet' },
     { key: 'kategorite',       emoji: '📋', label: 'Kategorite' },
     { key: 'porosite',         emoji: '🛒', label: 'Porositë' },
+    { key: 'detajetporosise',  emoji: '📄', label: 'Detajet Porosive' },
     { key: 'punetoret',        emoji: '👥', label: 'Punetoret' },
     { key: 'tavolinat',        emoji: '🪑', label: 'Tavolinat' },
     { key: 'inventari',        emoji: '📦', label: 'Inventari' },
@@ -115,6 +117,7 @@ const Dashboard = () => {
       case 'produktet':        return <Produktet />;
       case 'kategorite':       return <Kategorite />;
       case 'porosite':         return <Porosite />;
+      case 'detajetporosise':  return <DetajetPorosise />;
       case 'punetoret':        return <Punetoret />;
       case 'tavolinat':        return <Tavolinat />;
       case 'inventari':        return <Inventari />;
