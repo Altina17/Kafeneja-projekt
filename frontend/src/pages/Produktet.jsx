@@ -9,6 +9,7 @@ const Produktet = () => {
   const [filtriStatusi, setFiltriStatusi] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [editData, setEditData] = useState(null);
+  const [konfirmo, setKonfirmo] = useState({ shfaq: false, id: null, emri: '' });
   const [form, setForm] = useState({
     emri: '', kategoria_id: '', pershkrimi: '', cmimi: '', statusi: 'aktiv', foto: ''
   });
@@ -59,20 +60,32 @@ const Produktet = () => {
     setShowForm(true);
   };
 
-  const handleDelete = async (id, emri) => {
-    if (window.confirm(`A je i sigurt që dëshiron të fshish "${emri}"?`)) {
-      try {
-        await API.delete(`/products/${id}`);
-        toast.success(`Produkti "${emri}" u fshi me sukses!`);
-        fetchProduktet();
-      } catch (error) {
-        toast.error('Ndodhi një gabim gjatë fshirjes!');
-      }
+  const handleDelete = async () => {
+    try {
+      await API.delete(`/products/${konfirmo.id}`);
+      toast.success(`Produkti "${konfirmo.emri}" u fshi me sukses!`);
+      setKonfirmo({ shfaq: false, id: null, emri: '' });
+      fetchProduktet();
+    } catch (error) {
+      toast.error('Ndodhi një gabim gjatë fshirjes!');
     }
   };
 
   return (
     <div>
+      {konfirmo.shfaq && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-xl shadow-xl w-80">
+            <h3 className="text-lg font-bold mb-2">Konfirmo Fshirjen</h3>
+            <p className="text-gray-600 mb-4">A je i sigurt që dëshiron të fshish <strong>"{konfirmo.emri}"</strong>?</p>
+            <div className="flex gap-3">
+              <button onClick={handleDelete} className="flex-1 bg-red-500 text-white py-2 rounded hover:bg-red-600">Po, Fshij</button>
+              <button onClick={() => setKonfirmo({ shfaq: false, id: null, emri: '' })} className="flex-1 bg-gray-200 text-gray-700 py-2 rounded hover:bg-gray-300">Anulo</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Produktet</h1>
         <button
@@ -110,12 +123,8 @@ const Produktet = () => {
             </select>
             <input className="border p-2 rounded col-span-2" placeholder="Pershkrimi" value={form.pershkrimi} onChange={(e) => setForm({...form, pershkrimi: e.target.value})} />
             <div className="col-span-2 flex gap-2">
-              <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
-                {editData ? 'Ruaj Ndryshimet' : 'Shto'}
-              </button>
-              <button type="button" onClick={() => setShowForm(false)} className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500">
-                Anulo
-              </button>
+              <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">{editData ? 'Ruaj Ndryshimet' : 'Shto'}</button>
+              <button type="button" onClick={() => setShowForm(false)} className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500">Anulo</button>
             </div>
           </form>
         </div>
@@ -136,14 +145,14 @@ const Produktet = () => {
               <tr><td colSpan="4" className="p-4 text-center text-gray-500">Nuk u gjet asnjë produkt!</td></tr>
             ) : (
               produktetFiltruar.map((p) => (
-                <tr key={p.produkt_id} className="border-t">
+                <tr key={p.produkt_id} className="border-t even:bg-gray-50">
                   <td className="p-2 text-sm">{p.emri}</td>
                   <td className="p-2 text-sm">{p.cmimi}€</td>
                   <td className="p-2 text-sm">{p.statusi}</td>
                   <td className="p-2">
                     <div className="flex gap-1">
                       <button onClick={() => handleEdit(p)} className="bg-yellow-400 text-white px-2 py-1 rounded text-xs">Ndrysho</button>
-                      <button onClick={() => handleDelete(p.produkt_id, p.emri)} className="bg-red-500 text-white px-2 py-1 rounded text-xs">Fshij</button>
+                      <button onClick={() => setKonfirmo({ shfaq: true, id: p.produkt_id, emri: p.emri })} className="bg-red-500 text-white px-2 py-1 rounded text-xs">Fshij</button>
                     </div>
                   </td>
                 </tr>
