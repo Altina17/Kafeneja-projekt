@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 
 const Furnitori = () => {
   const [furnitoret, setFurnitoret] = useState([]);
+  const [llojet, setLlojet] = useState([]);
   const [kerkim, setKerkim] = useState('');
   const [form, setForm] = useState({ emri: '', personi_kontaktit: '', telefoni: '', email: '', adresa: '', lloji_produkteve: '' });
   const [editId, setEditId] = useState(null);
@@ -15,7 +16,10 @@ const Furnitori = () => {
     setFurnitoret(res.data);
   };
 
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => {
+    fetchData();
+    API.get('/llojet-produkteve').then(r => setLlojet(r.data));
+  }, []);
 
   const furnitoretFiltruar = furnitoret.filter(f =>
     f.emri?.toLowerCase().includes(kerkim.toLowerCase()) ||
@@ -75,7 +79,9 @@ const Furnitori = () => {
 
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Furnitoret</h2>
-        <button onClick={() => { setShowForm(!showForm); setEditId(null); setForm({ emri: '', personi_kontaktit: '', telefoni: '', email: '', adresa: '', lloji_produkteve: '' }); }} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        <button
+          onClick={() => { setShowForm(!showForm); setEditId(null); setForm({ emri: '', personi_kontaktit: '', telefoni: '', email: '', adresa: '', lloji_produkteve: '' }); }}
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
           + Shto Furnitor
         </button>
       </div>
@@ -110,11 +116,9 @@ const Furnitori = () => {
             <label className="block text-sm font-medium text-gray-600 mb-1">Lloji Produkteve</label>
             <select className="border p-2 rounded w-full" value={form.lloji_produkteve} onChange={e => setForm({...form, lloji_produkteve: e.target.value})}>
               <option value="">Zgjidh llojin</option>
-              <option value="Pije">Pije</option>
-              <option value="Ushqim">Ushqim</option>
-              <option value="Pastrimi">Pastrimi</option>
-              <option value="Pajisje">Pajisje</option>
-              <option value="Tjeter">Tjetër</option>
+              {llojet.map(l => (
+                <option key={l.lloji_id} value={l.emri}>{l.emri}</option>
+              ))}
             </select>
           </div>
           <div className="col-span-2 flex gap-2">

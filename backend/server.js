@@ -18,6 +18,7 @@ import porositeFurnitorRoute from './routes/porositeFurnitorRoute.js';
 import recetaRoute from './routes/recetaRoute.js';
 import pushimiRoute from './routes/pushimiRoute.js';
 import metodatPagesaveRoute from './routes/metodatPagesaveRoute.js';
+import llojetProdukteveRoute from './routes/llojetProdukteveRoute.js';
 
 const app = express();
 
@@ -41,6 +42,7 @@ app.use('/api/receta', recetaRoute);
 app.use('/api/lejet', pushimiRoute);
 app.use('/api/detajet-porosise', detajetPorosiseRoute);
 app.use('/api/metodat-pageses', metodatPagesaveRoute);
+app.use('/api/llojet-produkteve', llojetProdukteveRoute);
 
 app.get('/', (req, res) => {
   res.send("HI!");
