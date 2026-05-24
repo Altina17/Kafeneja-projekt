@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import API from '../api/axios';
+import { toast } from 'react-toastify';
 
 const STORAGE_KEY = 'kafeneja_recetat';
 const loadRecetat = () => { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch { return {}; } };
@@ -8,10 +9,11 @@ const saveRecetat = (data) => localStorage.setItem(STORAGE_KEY, JSON.stringify(d
 const RecetaPerberesit = () => {
   const [produktet, setProduktet] = useState([]);
   const [inventari, setInventari] = useState([]);
-  const [recetat, setRecetat]     = useState(loadRecetat());
+  const [recetat, setRecetat] = useState(loadRecetat());
   const [zgjedhurId, setZgjedhurId] = useState('');
-  const [form, setForm]           = useState({ inventar_id: '', sasia: '', njesia: '' });
-  const [editIdx, setEditIdx]     = useState(null);
+  const [form, setForm] = useState({ inventar_id: '', sasia: '', njesia: '' });
+  const [editIdx, setEditIdx] = useState(null);
+  const [konfirmo, setKonfirmo] = useState({ shfaq: false, idx: null });
 
   useEffect(() => {
     API.get('/products').then(r => setProduktet(r.data));
@@ -25,9 +27,9 @@ const RecetaPerberesit = () => {
     const artikulli = inventari.find(i => i.inventar_id == form.inventar_id);
     const hyrja = {
       inventar_id: form.inventar_id,
-      emri:        artikulli?.emri_artikullit || '',
-      sasia:       form.sasia,
-      njesia:      form.njesia || artikulli?.njesia_matese || '',
+      emri: artikulli?.emri_artikullit || '',
+      sasia: form.sasia,
+      njesia: form.njesia || artikulli?.njesia_matese || '',
     };
     const recetaRe = [...recetaAktuale];
     if (editIdx !== null) { recetaRe[editIdx] = hyrja; } else { recetaRe.push(hyrja); }
@@ -36,6 +38,7 @@ const RecetaPerberesit = () => {
     saveRecetat(recetatRe);
     setForm({ inventar_id: '', sasia: '', njesia: '' });
     setEditIdx(null);
+    toast.success('Përbërësi u shtua me sukses!');
   };
 
   const handleEdit = (idx) => {
@@ -44,17 +47,30 @@ const RecetaPerberesit = () => {
     setEditIdx(idx);
   };
 
-  const handleDelete = (idx) => {
-    if (window.confirm('A jeni i sigurt?')) {
-      const recetaRe = recetaAktuale.filter((_, i) => i !== idx);
-      const recetatRe = { ...recetat, [zgjedhurId]: recetaRe };
-      setRecetat(recetatRe);
-      saveRecetat(recetatRe);
-    }
+  const handleDelete = () => {
+    const recetaRe = recetaAktuale.filter((_, i) => i !== konfirmo.idx);
+    const recetatRe = { ...recetat, [zgjedhurId]: recetaRe };
+    setRecetat(recetatRe);
+    saveRecetat(recetatRe);
+    setKonfirmo({ shfaq: false, idx: null });
+    toast.success('Përbërësi u fshi me sukses!');
   };
 
   return (
     <div>
+      {konfirmo.shfaq && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-xl shadow-xl w-80">
+            <h3 className="text-lg font-bold mb-2">Konfirmo Fshirjen</h3>
+            <p className="text-gray-600 mb-4">A je i sigurt që dëshiron ta fshish këtë përbërës?</p>
+            <div className="flex gap-3">
+              <button onClick={handleDelete} className="flex-1 bg-red-500 text-white py-2 rounded hover:bg-red-600">Po, Fshij</button>
+              <button onClick={() => setKonfirmo({ shfaq: false, idx: null })} className="flex-1 bg-gray-200 text-gray-700 py-2 rounded hover:bg-gray-300">Anulo</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <h2 className="text-2xl font-bold mb-4">Receta & Përbërësit</h2>
 
       <div className="bg-white p-4 rounded shadow mb-6">
@@ -88,33 +104,37 @@ const RecetaPerberesit = () => {
             </button>
           </form>
 
-          <table className="w-full bg-white rounded shadow">
-            <thead className="bg-gray-200">
-              <tr>
-                <th className="p-3 text-left">Artikulli</th>
-                <th className="p-3 text-left">Sasia</th>
-                <th className="p-3 text-left">Njësia</th>
-                <th className="p-3 text-left">Veprimet</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recetaAktuale.length === 0 ? (
-                <tr><td colSpan={4} className="p-6 text-center text-gray-400">Nuk ka përbërës ende.</td></tr>
-              ) : (
-                recetaAktuale.map((item, idx) => (
-                  <tr key={idx} className="border-t">
-                    <td className="p-3">{item.emri}</td>
-                    <td className="p-3">{item.sasia}</td>
-                    <td className="p-3">{item.njesia || '—'}</td>
-                    <td className="p-3 flex gap-2">
-                      <button onClick={() => handleEdit(idx)} className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600">Ndrysho</button>
-                      <button onClick={() => handleDelete(idx)} className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Fshi</button>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+          <div className="bg-white rounded shadow overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="p-3 text-left text-sm">Artikulli</th>
+                  <th className="p-3 text-left text-sm">Sasia</th>
+                  <th className="p-3 text-left text-sm">Njësia</th>
+                  <th className="p-3 text-left text-sm">Veprimet</th>
+                </tr>
+              </thead>
+              <tbody>
+                {recetaAktuale.length === 0 ? (
+                  <tr><td colSpan={4} className="p-6 text-center text-gray-400">Nuk ka përbërës ende.</td></tr>
+                ) : (
+                  recetaAktuale.map((item, idx) => (
+                    <tr key={idx} className="border-t even:bg-gray-50">
+                      <td className="p-3 text-sm">{item.emri}</td>
+                      <td className="p-3 text-sm">{item.sasia}</td>
+                      <td className="p-3 text-sm">{item.njesia || '—'}</td>
+                      <td className="p-3">
+                        <div className="flex gap-1">
+                          <button onClick={() => handleEdit(idx)} className="bg-yellow-400 text-white px-2 py-1 rounded text-xs">Ndrysho</button>
+                          <button onClick={() => setKonfirmo({ shfaq: true, idx })} className="bg-red-500 text-white px-2 py-1 rounded text-xs">Fshij</button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </>
       )}
     </div>
