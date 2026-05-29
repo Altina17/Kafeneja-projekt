@@ -29,15 +29,15 @@ export const AuthProvider = ({ children }) => {
       .finally(() => setChecking(false));
   }, []);
 
-  const login = async (email, password) => {
-    const res = await API.post('/auth/login', { email, password });
-    setAccessToken(res.data.accessToken);
-    setUser(res.data.user);
-    localStorage.setItem('refreshToken', res.data.refreshToken);
-    localStorage.setItem('user', JSON.stringify(res.data.user));
-    return res.data;
-  };
-
+ const login = async (email, password) => {
+  const res = await API.post('/auth/login', { email, password });
+  console.log('LOGIN RESPONSE:', res.data);
+  setAccessToken(res.data.accessToken);
+  setUser(res.data.user);
+  localStorage.setItem('refreshToken', res.data.refreshToken);
+  localStorage.setItem('user', JSON.stringify(res.data.user));
+  return res.data;
+};
   const logout = async () => {
     try {
       const refreshToken = localStorage.getItem('refreshToken');

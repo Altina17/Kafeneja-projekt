@@ -5,7 +5,6 @@ import API from '../api/axios';
 import Produktet from '../pages/Produktet';
 import Kategorite from '../pages/Kategorite';
 import Porosite from '../pages/Porosite';
-import DetajetPorosise from '../pages/DetajetPorosise';
 import Inventari from '../pages/Inventari';
 import Furnitori from '../pages/Furnitori';
 import Rezervimet from '../pages/Rezervimet';
@@ -29,21 +28,20 @@ const Dashboard = () => {
   };
 
   const navItems = [
-    { key: 'home',             emoji: '📊', label: 'Dashboard' },
-    { key: 'produktet',        emoji: '🍽️', label: 'Produktet' },
-    { key: 'kategorite',       emoji: '📋', label: 'Kategorite' },
-    { key: 'porosite',         emoji: '🛒', label: 'Porositë' },
-    { key: 'detajetporosise',  emoji: '📄', label: 'Detajet Porosive' },
-    { key: 'punetoret',        emoji: '👥', label: 'Punetoret' },
-    { key: 'tavolinat',        emoji: '🪑', label: 'Tavolinat' },
-    { key: 'inventari',        emoji: '📦', label: 'Inventari' },
-    { key: 'furnitori',        emoji: '🚚', label: 'Furnitoret' },
-    { key: 'rezervimet',       emoji: '📅', label: 'Rezervimet' },
-    { key: 'turnet',           emoji: '🕐', label: 'Turnet' },
-    { key: 'shpenzimet',       emoji: '💰', label: 'Shpenzimet' },
-    { key: 'porositefurnitor', emoji: '📝', label: 'Porositë Furnitor' },
-    { key: 'receta',           emoji: '📖', label: 'Receta' },
-    { key: 'pushimet',         emoji: '🏖️', label: 'Pushimet' },
+    { key: 'home',             emoji: '📊', label: 'Dashboard',         roles: ['admin', 'kamarier'] },
+    { key: 'produktet',        emoji: '🍽️', label: 'Produktet',         roles: ['admin'] },
+    { key: 'kategorite',       emoji: '📋', label: 'Kategorite',        roles: ['admin'] },
+    { key: 'porosite',         emoji: '🛒', label: 'Porositë',          roles: ['admin', 'kamarier'] },
+    { key: 'punetoret',        emoji: '👥', label: 'Punetoret',         roles: ['admin'] },
+    { key: 'tavolinat',        emoji: '🪑', label: 'Tavolinat',         roles: ['admin', 'kamarier'] },
+    { key: 'inventari',        emoji: '📦', label: 'Inventari',         roles: ['admin'] },
+    { key: 'furnitori',        emoji: '🚚', label: 'Furnitoret',        roles: ['admin'] },
+    { key: 'rezervimet',       emoji: '📅', label: 'Rezervimet',        roles: ['admin', 'kamarier'] },
+    { key: 'turnet',           emoji: '🕐', label: 'Turnet',            roles: ['admin'] },
+    { key: 'shpenzimet',       emoji: '💰', label: 'Shpenzimet',        roles: ['admin'] },
+    { key: 'porositefurnitor', emoji: '📝', label: 'Porositë Furnitor', roles: ['admin'] },
+    { key: 'receta',           emoji: '📖', label: 'Receta',            roles: ['admin'] },
+    { key: 'pushimet',         emoji: '🏖️', label: 'Pushimet',         roles: ['admin'] },
   ];
 
   const Home = () => {
@@ -54,24 +52,22 @@ const Dashboard = () => {
 
     useEffect(() => {
       const fetchStats = async () => {
-        try {
-          const [prod, por, pun, tav, rez, fur] = await Promise.allSettled([
-            API.get('/products'),
-            API.get('/orders'),
-            API.get('/employees'),
-            API.get('/tables'),
-            API.get('/rezervimet'),
-            API.get('/furnitoret'),
-          ]);
-          setStats({
-            produktet:  prod.status === 'fulfilled' ? prod.value.data.length : 0,
-            porosite:   por.status  === 'fulfilled' ? por.value.data.length  : 0,
-            punetoret:  pun.status  === 'fulfilled' ? pun.value.data.length  : 0,
-            tavolinat:  tav.status  === 'fulfilled' ? tav.value.data.length  : 0,
-            rezervimet: rez.status  === 'fulfilled' ? rez.value.data.length  : 0,
-            furnitoret: fur.status  === 'fulfilled' ? fur.value.data.length  : 0,
-          });
-        } catch {}
+        const [prod, por, pun, tav, rez, fur] = await Promise.allSettled([
+          API.get('/products'),
+          API.get('/orders'),
+          API.get('/employees'),
+          API.get('/tables'),
+          API.get('/rezervimet'),
+          API.get('/furnitoret'),
+        ]);
+        setStats({
+          produktet:  prod.status === 'fulfilled' ? prod.value.data.length : 0,
+          porosite:   por.status  === 'fulfilled' ? por.value.data.length  : 0,
+          punetoret:  pun.status  === 'fulfilled' ? pun.value.data.length  : 0,
+          tavolinat:  tav.status  === 'fulfilled' ? tav.value.data.length  : 0,
+          rezervimet: rez.status  === 'fulfilled' ? rez.value.data.length  : 0,
+          furnitoret: fur.status  === 'fulfilled' ? fur.value.data.length  : 0,
+        });
       };
       fetchStats();
     }, []);
@@ -117,7 +113,6 @@ const Dashboard = () => {
       case 'produktet':        return <Produktet />;
       case 'kategorite':       return <Kategorite />;
       case 'porosite':         return <Porosite />;
-      case 'detajetporosise':  return <DetajetPorosise />;
       case 'punetoret':        return <Punetoret />;
       case 'tavolinat':        return <Tavolinat />;
       case 'inventari':        return <Inventari />;
@@ -136,10 +131,8 @@ const Dashboard = () => {
     <div className="flex h-screen bg-gray-100 overflow-hidden">
 
       {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden"
+          onClick={() => setSidebarOpen(false)} />
       )}
 
       <div className={`
@@ -155,17 +148,18 @@ const Dashboard = () => {
         </div>
 
         <nav className="flex flex-col p-4 gap-1 overflow-y-auto flex-1">
-          {navItems.map((item) => (
-            <button
-              key={item.key}
-              onClick={() => { setActivePage(item.key); setSidebarOpen(false); }}
-              className={`text-left p-3 rounded hover:bg-gray-700 flex items-center gap-3 text-sm md:text-base transition
-                ${activePage === item.key ? 'bg-gray-700 font-medium' : ''}`}
-            >
-              <span>{item.emoji}</span>
-              <span>{item.label}</span>
-            </button>
-          ))}
+          {navItems
+            .filter(item => item.roles.includes(user?.role))
+            .map((item) => (
+              <button
+                key={item.key}
+                onClick={() => { setActivePage(item.key); setSidebarOpen(false); }}
+                className={`text-left p-3 rounded hover:bg-gray-700 flex items-center gap-3 text-sm md:text-base transition
+                  ${activePage === item.key ? 'bg-gray-700 font-medium' : ''}`}>
+                <span>{item.emoji}</span>
+                <span>{item.label}</span>
+              </button>
+            ))}
         </nav>
 
         <div className="p-4">
