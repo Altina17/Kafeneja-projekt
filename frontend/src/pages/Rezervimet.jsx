@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 const Rezervimet = () => {
   const [rezervimet, setRezervimet] = useState([]);
   const [tavolinat, setTavolinat] = useState([]);
+  const [tavolinatZena, setTavolinatZena] = useState([]);
   const [kerkim, setKerkim] = useState('');
   const [filtriStatusi, setFiltriStatusi] = useState('');
   const [form, setForm] = useState({ emri_klientit: '', telefoni: '', tavolina_id: '', data: '', ora: '', numri_personave: '', statusi: 'aktive' });
@@ -21,6 +22,16 @@ const Rezervimet = () => {
     fetchData();
     API.get('/tables').then(r => setTavolinat(r.data));
   }, []);
+
+  useEffect(() => {
+    if (form.data && form.ora) {
+      API.get(`/rezervimet/tavolina-zena?data=${form.data}&ora=${form.ora}`)
+        .then(r => setTavolinatZena(r.data.map(id => Number(id))))
+        .catch(() => setTavolinatZena([]));
+    } else {
+      setTavolinatZena([]);
+    }
+  }, [form.data, form.ora]);
 
   const emriTavolines = (id) => {
     const t = tavolinat.find(t => t.tavolina_id === id);
@@ -48,12 +59,13 @@ const Rezervimet = () => {
       setShowForm(false);
       fetchData();
     } catch (error) {
-      toast.error('Ndodhi një gabim!');
+      toast.error(error.response?.data?.message || 'Ndodhi një gabim!');
     }
   };
 
   const handleEdit = (item) => {
-    setForm({...item, data: item.data?.slice(0, 10)});
+    const data = item.data ? new Date(item.data).toISOString().slice(0, 10) : '';
+    setForm({...item, data});
     setEditId(item.rezervim_id);
     setShowForm(true);
   };
@@ -121,25 +133,37 @@ const Rezervimet = () => {
             <input className="border p-2 rounded w-full" placeholder="Telefoni" value={form.telefoni} onChange={e => setForm({...form, telefoni: e.target.value})} />
           </div>
           <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">Data</label>
+            <input className="border p-2 rounded w-full" type="date" value={form.data} onChange={e => setForm({...form, data: e.target.value})} required />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">Ora</label>
+            <input className="border p-2 rounded w-full" type="time" value={form.ora} onChange={e => setForm({...form, ora: e.target.value})} required />
+          </div>
+          <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">Tavolina</label>
+            {(!form.data || !form.ora) && (
+              <p className="text-xs text-orange-500 mb-1">Zgjidh datën dhe orën fillimisht</p>
+            )}
             <select className="border p-2 rounded w-full" value={form.tavolina_id} onChange={e => setForm({...form, tavolina_id: e.target.value})} required>
               <option value="">Zgjidh tavolinën</option>
-              {tavolinat.map(t => (
-                <option key={t.tavolina_id} value={t.tavolina_id}>Tavolina {t.numri} - Kapaciteti: {t.kapaciteti}</option>
-              ))}
+              {tavolinat.map(t => {
+                const eshteZene = tavolinatZena.includes(Number(t.tavolina_id));
+                return (
+                  <option
+                    key={t.tavolina_id}
+                    value={t.tavolina_id}
+                    disabled={eshteZene}
+                    style={eshteZene ? { color: 'red' } : {}}>
+                    Tavolina {t.numri} - Kap: {t.kapaciteti} {eshteZene ? '(e rezervuar)' : ''}
+                  </option>
+                );
+              })}
             </select>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">Numri Personave</label>
             <input className="border p-2 rounded w-full" placeholder="Numri personave" type="number" value={form.numri_personave} onChange={e => setForm({...form, numri_personave: e.target.value})} />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">Data</label>
-            <input className="border p-2 rounded w-full" type="date" value={form.data} onChange={e => setForm({...form, data: e.target.value})} />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">Ora</label>
-            <input className="border p-2 rounded w-full" type="time" value={form.ora} onChange={e => setForm({...form, ora: e.target.value})} />
           </div>
           <div className="col-span-2">
             <label className="block text-sm font-medium text-gray-600 mb-1">Statusi</label>
@@ -178,7 +202,7 @@ const Rezervimet = () => {
                   <td className="p-3 text-sm">{item.emri_klientit}</td>
                   <td className="p-3 text-sm">{item.telefoni}</td>
                   <td className="p-3 text-sm">{emriTavolines(item.tavolina_id)}</td>
-                  <td className="p-3 text-sm">{item.data?.slice(0, 10)}</td>
+                  <td className="p-3 text-sm">{item.data ? new Date(item.data).toISOString().slice(0, 10) : '—'}</td>
                   <td className="p-3 text-sm">{item.ora}</td>
                   <td className="p-3 text-sm">
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusiBadge(item.statusi)}`}>{item.statusi}</span>
