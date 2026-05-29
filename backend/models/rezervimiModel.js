@@ -26,6 +26,12 @@ export const createRezervim = async ({ emri_klientit, telefoni, tavolina_id, dat
     'INSERT INTO rezervimet (emri_klientit, telefoni, tavolina_id, data, ora, numri_personave, statusi) VALUES (?, ?, ?, ?, ?, ?, ?)',
     [emri_klientit, telefoni, tavolina_id, data, ora, numri_personave, statusi]
   );
+
+  await pool.query(
+    'UPDATE tavolinat SET statusi = ? WHERE tavolina_id = ?',
+    ['rezervuar', tavolina_id]
+  );
+
   return { id: result.insertId, emri_klientit };
 };
 
@@ -34,11 +40,34 @@ export const updateRezervim = async (id, { emri_klientit, telefoni, tavolina_id,
     'UPDATE rezervimet SET emri_klientit=?, telefoni=?, tavolina_id=?, data=?, ora=?, numri_personave=?, statusi=? WHERE rezervim_id=?',
     [emri_klientit, telefoni, tavolina_id, data, ora, numri_personave, statusi, id]
   );
+
+  // Nëse statusi ndryshon në anuluar — ktheje tavolinën si e lire
+  if (statusi === 'anuluar' || statusi === 'perfunduar') {
+    await pool.query(
+      'UPDATE tavolinat SET statusi = ? WHERE tavolina_id = ?',
+      ['e lire', tavolina_id]
+    );
+  } else {
+    await pool.query(
+      'UPDATE tavolinat SET statusi = ? WHERE tavolina_id = ?',
+      ['rezervuar', tavolina_id]
+    );
+  }
+
   return { id, emri_klientit };
 };
 
 export const deleteRezervim = async (id) => {
+  const [rows] = await pool.query('SELECT tavolina_id FROM rezervimet WHERE rezervim_id = ?', [id]);
+  
   await pool.query('DELETE FROM rezervimet WHERE rezervim_id = ?', [id]);
+
+  if (rows.length > 0) {
+    await pool.query(
+      'UPDATE tavolinat SET statusi = ? WHERE tavolina_id = ?',
+      ['e lire', rows[0].tavolina_id]
+    );
+  }
 };
 
 export const getTavolinatEZena = async (data, ora) => {

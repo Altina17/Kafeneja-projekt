@@ -34,9 +34,9 @@ const Rezervimet = () => {
   }, [form.data, form.ora]);
 
   const emriTavolines = (id) => {
-    const t = tavolinat.find(t => t.tavolina_id === id);
-    return t ? `Tavolina ${t.numri}` : id;
-  };
+  const t = tavolinat.find(t => t.tavolina_id === Number(id));
+  return t ? `Tavolina ${t.numri}` : `Tavolina ${id}`;
+};
 
   const rezervimetFiltruar = rezervimet.filter(r => {
     const perputhetKerkim = r.emri_klientit?.toLowerCase().includes(kerkim.toLowerCase());
