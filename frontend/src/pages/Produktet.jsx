@@ -5,12 +5,16 @@ import espressoImg from '../images/espresso.jfif';
 import icecoffeImg from '../images/icecoffe.jpg';
 import cheesecakeImg from '../images/cheesecake.jfif';
 import burgerImg from '../images/burger.jfif';
+import cappuccinoImg from '../images/cappuccino.jfif';
+import latteImg from '../images/latte.jfif';
 
 const imazhetLokale = {
   'espresso': espressoImg,
   'icecoffe': icecoffeImg,
   'cheesecake': cheesecakeImg,
   'burger': burgerImg,
+  'cappuccino': cappuccinoImg,
+  'latte': latteImg,
 };
 
 const Produktet = () => {
@@ -162,6 +166,8 @@ const Produktet = () => {
                 <option value="icecoffe">Ice Coffe</option>
                 <option value="cheesecake">Cheesecake</option>
                 <option value="burger">Burger</option>
+                <option value="cappuccino">Cappuccino</option>
+                <option value="latte">Latte</option>
               </select>
               {form.foto && imazhetLokale[form.foto] && (
                 <img src={imazhetLokale[form.foto]} alt="Preview" className="mt-2 h-24 w-24 object-cover rounded border" />
