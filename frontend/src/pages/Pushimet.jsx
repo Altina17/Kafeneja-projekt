@@ -46,7 +46,7 @@ const Pushimet = () => {
       statusi: item.statusi,
       arsyeja: item.arsyeja || '',
     });
-    setEditId(item.pushimi_id);
+    setEditId(item.leja_id);
   };
 
   const handleDelete = async () => {
@@ -133,7 +133,7 @@ const Pushimet = () => {
               <tr><td colSpan="7" className="p-4 text-center text-gray-500">Nuk ka pushime!</td></tr>
             ) : (
               pushimet.map(item => (
-                <tr key={item.pushimi_id} className="border-t even:bg-gray-50">
+                <tr key={item.leja_id} className="border-t even:bg-gray-50">
                   <td className="p-3 text-sm">{item.emri} {item.mbiemri}</td>
                   <td className="p-3 text-sm">{item.lloji}</td>
                   <td className="p-3 text-sm">{item.data_fillimit?.slice(0, 10)}</td>
@@ -143,7 +143,7 @@ const Pushimet = () => {
                   <td className="p-3">
                     <div className="flex gap-1">
                       <button onClick={() => handleEdit(item)} className="bg-yellow-400 text-white px-2 py-1 rounded text-xs">Ndrysho</button>
-                      <button onClick={() => setKonfirmo({ shfaq: true, id: item.pushimi_id })} className="bg-red-500 text-white px-2 py-1 rounded text-xs">Fshij</button>
+                      <button onClick={() => setKonfirmo({ shfaq: true, id: item.leja_id })} className="bg-red-500 text-white px-2 py-1 rounded text-xs">Fshij</button>
                     </div>
                   </td>
                 </tr>
