@@ -1,6 +1,17 @@
 import { useState, useEffect } from 'react';
 import API from '../api/axios';
 import { toast } from 'react-toastify';
+import espressoImg from '../images/espresso.jfif';
+import icecoffeImg from '../images/icecoffe.jpg';
+import cheesecakeImg from '../images/cheesecake.jfif';
+import burgerImg from '../images/burger.jfif';
+
+const imazhetLokale = {
+  'espresso': espressoImg,
+  'icecoffe': icecoffeImg,
+  'cheesecake': cheesecakeImg,
+  'burger': burgerImg,
+};
 
 const Produktet = () => {
   const [produktet, setProduktet] = useState([]);
@@ -34,6 +45,12 @@ const Produktet = () => {
     const perputhetStatusi = filtriStatusi === '' || p.statusi === filtriStatusi;
     return perputhetKerkim && perputhetStatusi;
   });
+
+  const getFoto = (foto) => {
+    if (!foto) return null;
+    if (imazhetLokale[foto]) return imazhetLokale[foto];
+    return foto;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -109,19 +126,47 @@ const Produktet = () => {
         <div className="bg-white p-6 rounded shadow mb-6">
           <h2 className="text-lg font-bold mb-4">{editData ? 'Ndrysho Produkt' : 'Shto Produkt'}</h2>
           <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
-            <input className="border p-2 rounded" placeholder="Emri" value={form.emri} onChange={(e) => setForm({...form, emri: e.target.value})} required />
-            <input className="border p-2 rounded" placeholder="Cmimi" type="number" value={form.cmimi} onChange={(e) => setForm({...form, cmimi: e.target.value})} required />
-            <select className="border p-2 rounded" value={form.kategoria_id} onChange={(e) => setForm({...form, kategoria_id: e.target.value})} required>
-              <option value="">Zgjidh kategorinë</option>
-              {kategorite.map(k => (
-                <option key={k.kategori_id} value={k.kategori_id}>{k.emri}</option>
-              ))}
-            </select>
-            <select className="border p-2 rounded" value={form.statusi} onChange={(e) => setForm({...form, statusi: e.target.value})}>
-              <option value="aktiv">Aktiv</option>
-              <option value="joaktiv">Joaktiv</option>
-            </select>
-            <input className="border p-2 rounded col-span-2" placeholder="Pershkrimi" value={form.pershkrimi} onChange={(e) => setForm({...form, pershkrimi: e.target.value})} />
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-1">Emri</label>
+              <input className="border p-2 rounded w-full" placeholder="Emri" value={form.emri} onChange={(e) => setForm({...form, emri: e.target.value})} required />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-1">Cmimi (€)</label>
+              <input className="border p-2 rounded w-full" placeholder="0.00" type="number" step="0.01" value={form.cmimi} onChange={(e) => setForm({...form, cmimi: e.target.value})} required />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-1">Kategoria</label>
+              <select className="border p-2 rounded w-full" value={form.kategoria_id} onChange={(e) => setForm({...form, kategoria_id: e.target.value})} required>
+                <option value="">Zgjidh kategorinë</option>
+                {kategorite.map(k => (
+                  <option key={k.kategori_id} value={k.kategori_id}>{k.emri}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-1">Statusi</label>
+              <select className="border p-2 rounded w-full" value={form.statusi} onChange={(e) => setForm({...form, statusi: e.target.value})}>
+                <option value="aktiv">Aktiv</option>
+                <option value="joaktiv">Joaktiv</option>
+              </select>
+            </div>
+            <div className="col-span-2">
+              <label className="block text-sm font-medium text-gray-600 mb-1">Pershkrimi</label>
+              <input className="border p-2 rounded w-full" placeholder="Pershkrimi" value={form.pershkrimi} onChange={(e) => setForm({...form, pershkrimi: e.target.value})} />
+            </div>
+            <div className="col-span-2">
+              <label className="block text-sm font-medium text-gray-600 mb-1">Foto</label>
+              <select className="border p-2 rounded w-full" value={form.foto} onChange={(e) => setForm({...form, foto: e.target.value})}>
+                <option value="">Pa foto</option>
+                <option value="espresso">Espresso</option>
+                <option value="icecoffe">Ice Coffe</option>
+                <option value="cheesecake">Cheesecake</option>
+                <option value="burger">Burger</option>
+              </select>
+              {form.foto && imazhetLokale[form.foto] && (
+                <img src={imazhetLokale[form.foto]} alt="Preview" className="mt-2 h-24 w-24 object-cover rounded border" />
+              )}
+            </div>
             <div className="col-span-2 flex gap-2">
               <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">{editData ? 'Ruaj Ndryshimet' : 'Shto'}</button>
               <button type="button" onClick={() => setShowForm(false)} className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500">Anulo</button>
@@ -134,6 +179,7 @@ const Produktet = () => {
         <table className="w-full">
           <thead className="bg-gray-50">
             <tr>
+              <th className="text-left p-2 text-sm">Foto</th>
               <th className="text-left p-2 text-sm">Emri</th>
               <th className="text-left p-2 text-sm">Cmimi</th>
               <th className="text-left p-2 text-sm">Statusi</th>
@@ -142,10 +188,17 @@ const Produktet = () => {
           </thead>
           <tbody>
             {produktetFiltruar.length === 0 ? (
-              <tr><td colSpan="4" className="p-4 text-center text-gray-500">Nuk u gjet asnjë produkt!</td></tr>
+              <tr><td colSpan="5" className="p-4 text-center text-gray-500">Nuk u gjet asnjë produkt!</td></tr>
             ) : (
               produktetFiltruar.map((p) => (
                 <tr key={p.produkt_id} className="border-t even:bg-gray-50">
+                  <td className="p-2">
+                    {getFoto(p.foto) ? (
+                      <img src={getFoto(p.foto)} alt={p.emri} className="h-10 w-10 object-cover rounded" />
+                    ) : (
+                      <div className="h-10 w-10 bg-gray-200 rounded flex items-center justify-center text-gray-400 text-xs">Pa foto</div>
+                    )}
+                  </td>
                   <td className="p-2 text-sm">{p.emri}</td>
                   <td className="p-2 text-sm">{p.cmimi}€</td>
                   <td className="p-2 text-sm">{p.statusi}</td>

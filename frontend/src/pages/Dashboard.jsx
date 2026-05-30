@@ -15,6 +15,7 @@ import Punetoret from '../pages/Punetoret';
 import Tavolinat from '../pages/Tavolinat';
 import RecetaPerberesit from '../pages/RecetaPerberesit';
 import Pushimet from '../pages/Pushimet';
+import DetajetPorosise from '../pages/DetajetPorosise';
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
@@ -32,6 +33,7 @@ const Dashboard = () => {
     { key: 'produktet',        emoji: '🍽️', label: 'Produktet',         roles: ['admin'] },
     { key: 'kategorite',       emoji: '📋', label: 'Kategorite',        roles: ['admin'] },
     { key: 'porosite',         emoji: '🛒', label: 'Porositë',          roles: ['admin', 'kamarier'] },
+    { key: 'detajet',          emoji: '📄', label: 'Detajet Porosisë',  roles: ['admin'] },
     { key: 'punetoret',        emoji: '👥', label: 'Punetoret',         roles: ['admin'] },
     { key: 'tavolinat',        emoji: '🪑', label: 'Tavolinat',         roles: ['admin', 'kamarier'] },
     { key: 'inventari',        emoji: '📦', label: 'Inventari',         roles: ['admin'] },
@@ -113,6 +115,7 @@ const Dashboard = () => {
       case 'produktet':        return <Produktet />;
       case 'kategorite':       return <Kategorite />;
       case 'porosite':         return <Porosite />;
+      case 'detajet':          return <DetajetPorosise />;
       case 'punetoret':        return <Punetoret />;
       case 'tavolinat':        return <Tavolinat />;
       case 'inventari':        return <Inventari />;
