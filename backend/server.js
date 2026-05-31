@@ -20,14 +20,19 @@ import pushimiRoute from './routes/pushimiRoute.js';
 import metodatPagesaveRoute from './routes/metodatPagesaveRoute.js';
 import llojetProdukteveRoute from './routes/llojetProdukteveRoute.js';
 
+
+//krijimi i app tone permes dy middleware 
 const app = express();
 
+//Cross-origin resource Sharing
 app.use(cors({
   origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175'],
   credentials: true
 }));
-app.use(express.json());
+app.use(express.json());    //middleware 
 
+
+//regjistrimi i endpoints 
 app.use('/api/employees', punetoriRoute);
 app.use('/api/users', userRoute);
 app.use('/api/auth', authRoute);
